@@ -1,0 +1,19 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="splash.png">images/splash.png</file>
+    <file alias="crystal.png">images/crystal.png</file>
+	<file alias="new.png">images/new.png</file>
+	<file alias="save.png">images/save.png</file>
+	<file alias="print.png">images/print.png</file>
+	<file alias="undo.png">images/undo.png</file>
+	<file alias="open.png">images/open.png</file>
+	<file alias="zoomout.png">images/zoomout.png</file>
+	<file alias="zoomin.png">images/zoomin.png</file>
+	<file alias="filesave.png">images/filesave.png</file>
+	<file alias="config.png">images/config.png</file>
+	<file alias="view.png">images/view.png</file>
+	<file alias="center.png">images/center.png</file>
+	<file alias="ruler.png">images/ruler.png</file>
+	<file alias="info.html">info.html</file>
+</qresource>
+</RCC>

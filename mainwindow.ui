@@ -1,0 +1,678 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>547</width>
+    <height>617</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>QLaue</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" />
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>547</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile" >
+    <property name="title" >
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuRecent_Crystals" >
+     <property name="title" >
+      <string>Recent Crystals</string>
+     </property>
+     <addaction name="actionRecent1" />
+     <addaction name="actionRecent2" />
+     <addaction name="actionRecent3" />
+     <addaction name="actionRecent4" />
+     <addaction name="actionRecentSep" />
+     <addaction name="actionRecentClear" />
+    </widget>
+    <widget class="QMenu" name="menuImport" >
+     <property name="title" >
+      <string>Import</string>
+     </property>
+     <addaction name="actionCIF" />
+     <addaction name="actionPowder_Cell" />
+    </widget>
+    <addaction name="actionNew" />
+    <addaction name="action_Open" />
+    <addaction name="action_Save" />
+    <addaction name="actionSave_As" />
+    <addaction name="menuRecent_Crystals" />
+    <addaction name="menuImport" />
+    <addaction name="separator" />
+    <addaction name="actionPreferences" />
+    <addaction name="actionPage_Setup" />
+    <addaction name="separator" />
+    <addaction name="actionPrint" />
+    <addaction name="actionQuitSep" />
+    <addaction name="actionQuit" />
+   </widget>
+   <widget class="QMenu" name="menuWindow_2" >
+    <property name="title" >
+     <string>Window</string>
+    </property>
+    <widget class="QMenu" name="menuTools" >
+     <property name="title" >
+      <string>Tools</string>
+     </property>
+     <addaction name="actionControls_Toolbox" />
+     <addaction name="separator" />
+     <addaction name="actionCrystal_Orientation_View" />
+     <addaction name="actionRotations_Toolbox" />
+     <addaction name="actionIndexing_Viewer" />
+     <addaction name="actionText_Viewer" />
+    </widget>
+    <addaction name="menuTools" />
+    <addaction name="actionBring_All_To_Front" />
+   </widget>
+   <widget class="QMenu" name="menuCrystal" >
+    <property name="title" >
+     <string>Crystal</string>
+    </property>
+    <addaction name="actionLattice" />
+    <addaction name="separator" />
+    <addaction name="actionSet_Free_Rotate" />
+    <addaction name="actionSet_Orientation" />
+    <addaction name="actionView_Crystal_Parameters" />
+    <addaction name="separator" />
+    <addaction name="actionCalculate_Laue" />
+    <addaction name="actionCalculate_Single_Crystal" />
+   </widget>
+   <widget class="QMenu" name="menu_Laue" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="title" >
+     <string>Laue</string>
+    </property>
+    <addaction name="actionImport_Image" />
+    <addaction name="separator" />
+    <addaction name="actionShow_Image" />
+    <addaction name="actionInvert_Image" />
+    <addaction name="actionShow_Labels" />
+    <addaction name="actionReset_Labels" />
+    <addaction name="separator" />
+    <addaction name="actionLaueZoom" />
+    <addaction name="actionLaue_Reset_Zoom" />
+    <addaction name="separator" />
+    <addaction name="actionReset" />
+    <addaction name="actionDefine_Origin" />
+    <addaction name="actionMeasure_Scale" />
+    <addaction name="separator" />
+    <addaction name="actionSet_Laue_Orientation" />
+    <addaction name="actionReset_Orientation" />
+    <addaction name="separator" />
+    <addaction name="actionSolve_Orientation" />
+    <addaction name="actionResolve_Orientation" />
+    <addaction name="separator" />
+    <addaction name="actionRe_orient" />
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>Help</string>
+    </property>
+    <addaction name="action_About" />
+    <addaction name="action_Help" />
+   </widget>
+   <addaction name="menuFile" />
+   <addaction name="menuCrystal" />
+   <addaction name="menu_Laue" />
+   <addaction name="menuSingle_Crystal" />
+   <addaction name="menuWindow_2" />
+   <addaction name="menuHelp" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <action name="action_Open" >
+   <property name="text" >
+    <string>&amp;Open...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionLattice" >
+   <property name="text" >
+    <string>&amp;Set Lattice</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="action_Save" >
+   <property name="text" >
+    <string>&amp;Save Crystal</string>
+   </property>
+   <property name="shortcut" >
+    <string comment="Save" >Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionRotations" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>&amp;Rotations</string>
+   </property>
+  </action>
+  <action name="actionU_Matrix" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>U &amp;Matrix</string>
+   </property>
+  </action>
+  <action name="actionLaue_Display" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>&amp;Laue Display</string>
+   </property>
+  </action>
+  <action name="action_About" >
+   <property name="text" >
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionImport_Film" >
+   <property name="text" >
+    <string>Import Film...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionQuit" >
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionPrint" >
+   <property name="text" >
+    <string>Print</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_About" >
+   <property name="text" >
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionDefine_Origin" >
+   <property name="text" >
+    <string>Define Origin</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionMeasure_Scale" >
+   <property name="text" >
+    <string>Measure Scale</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionU_Matrix" >
+   <property name="text" >
+    <string>U &amp;Matrix</string>
+   </property>
+   <property name="shortcut" >
+    <string/>
+   </property>
+  </action>
+  <action name="actionSave_As" >
+   <property name="text" >
+    <string>Save Crystal As...</string>
+   </property>
+   <property name="toolTip" >
+    <string>Save Crystal As</string>
+   </property>
+  </action>
+  <action name="actionSet_Orientation" >
+   <property name="text" >
+    <string>Set &amp;Orientation</string>
+   </property>
+   <property name="shortcut" >
+    <string/>
+   </property>
+  </action>
+  <action name="actionReset" >
+   <property name="text" >
+    <string>&amp;Reset</string>
+   </property>
+   <property name="shortcut" >
+    <string/>
+   </property>
+  </action>
+  <action name="actionSet_Parameters" >
+   <property name="text" >
+    <string>Set Parameters</string>
+   </property>
+  </action>
+  <action name="actionPreferences" >
+   <property name="text" >
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionRecent1" >
+   <property name="text" >
+    <string>Recent1</string>
+   </property>
+  </action>
+  <action name="actionRecent2" >
+   <property name="text" >
+    <string>Recent2</string>
+   </property>
+  </action>
+  <action name="actionRecent3" >
+   <property name="text" >
+    <string>Recent3</string>
+   </property>
+  </action>
+  <action name="actionRecent4" >
+   <property name="text" >
+    <string>Recent4</string>
+   </property>
+  </action>
+  <action name="actionPage_Setup" >
+   <property name="text" >
+    <string>Page Setup</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionRe_orient" >
+   <property name="text" >
+    <string>Reorientate</string>
+   </property>
+   <property name="iconText" >
+    <string>Reorientate</string>
+   </property>
+   <property name="toolTip" >
+    <string>Reorientate</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+R</string>
+   </property>
+  </action>
+  <action name="actionRecentClear" >
+   <property name="text" >
+    <string>Clear List</string>
+   </property>
+  </action>
+  <action name="actionQuitSep" >
+   <property name="text" >
+    <string>QuitSep</string>
+   </property>
+  </action>
+  <action name="actionQuitSep" >
+   <property name="text" >
+    <string>QuitSep</string>
+   </property>
+  </action>
+  <action name="actionRecentSep" >
+   <property name="text" >
+    <string>RecentSep</string>
+   </property>
+  </action>
+  <action name="actionSet_Free_Rotate" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Set Free Rotate</string>
+   </property>
+  </action>
+  <action name="actionShow_Image" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Image</string>
+   </property>
+   <property name="iconText" >
+    <string>Show Image</string>
+   </property>
+   <property name="toolTip" >
+    <string>Show Image</string>
+   </property>
+  </action>
+  <action name="actionInvert_Image" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Invert Image</string>
+   </property>
+  </action>
+  <action name="actionIn" >
+   <property name="text" >
+    <string>In</string>
+   </property>
+  </action>
+  <action name="actionOut" >
+   <property name="text" >
+    <string>Out</string>
+   </property>
+  </action>
+  <action name="action100" >
+   <property name="text" >
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="actionZoom_In" >
+   <property name="text" >
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out" >
+   <property name="text" >
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="action100" >
+   <property name="text" >
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="action50" >
+   <property name="text" >
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="action25" >
+   <property name="text" >
+    <string>25%</string>
+   </property>
+  </action>
+  <action name="action10" >
+   <property name="text" >
+    <string>10%</string>
+   </property>
+  </action>
+  <action name="action200" >
+   <property name="text" >
+    <string>200%</string>
+   </property>
+  </action>
+  <action name="action500" >
+   <property name="text" >
+    <string>500%</string>
+   </property>
+  </action>
+  <action name="actionImport_Image" >
+   <property name="text" >
+    <string>Import Image ...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionNew" >
+   <property name="text" >
+    <string>New</string>
+   </property>
+  </action>
+  <action name="action125" >
+   <property name="text" >
+    <string>125%</string>
+   </property>
+  </action>
+  <action name="actionShow_Laue_Simulation" >
+   <property name="text" >
+    <string>Hide Simulation</string>
+   </property>
+  </action>
+  <action name="actionShow_Crystal_Simulation" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Simulation</string>
+   </property>
+  </action>
+  <action name="actionPowder_Cell" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Powder Cell (.cel)</string>
+   </property>
+  </action>
+  <action name="actionCIF" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>CIF (.cif)</string>
+   </property>
+  </action>
+  <action name="actionPlot_Log_Scale" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Plot Intensities on Log Scale</string>
+   </property>
+  </action>
+  <action name="actionShow_Indicies" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Indicies</string>
+   </property>
+  </action>
+  <action name="actionAdd_Superlattice_Wavevector" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Add Superlattice Wavevector</string>
+   </property>
+  </action>
+  <action name="actionLaueZoom" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Zoom</string>
+   </property>
+  </action>
+  <action name="actionLaue_Reset_Zoom" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Reset Zoom</string>
+   </property>
+  </action>
+  <action name="actionBring_All_To_Front" >
+   <property name="text" >
+    <string>Bring All To Front</string>
+   </property>
+  </action>
+  <action name="actionShow_Labels" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Labels</string>
+   </property>
+   <property name="iconText" >
+    <string>Show Labels</string>
+   </property>
+   <property name="toolTip" >
+    <string>Show Labels</string>
+   </property>
+  </action>
+  <action name="actionReset_Labels" >
+   <property name="text" >
+    <string>Reset Labels</string>
+   </property>
+  </action>
+  <action name="actionView_Crystal_Parameters" >
+   <property name="text" >
+    <string>View Crystal Parameters</string>
+   </property>
+  </action>
+  <action name="actionCrystal_Orientation_View" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Crystal Orientation View</string>
+   </property>
+  </action>
+  <action name="actionControls_Toolbox" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Controls Toolbox</string>
+   </property>
+  </action>
+  <action name="actionText_Viewer" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Text Viewer</string>
+   </property>
+  </action>
+  <action name="actionCalculate_Laue" >
+   <property name="text" >
+    <string>Calculate Laue</string>
+   </property>
+  </action>
+  <action name="actionCalculate_Single_Crystal" >
+   <property name="text" >
+    <string>Calculate Single Crystal Diffraction</string>
+   </property>
+  </action>
+  <action name="actionView_Diffraction_Results" >
+   <property name="text" >
+    <string>View Diffraction Results</string>
+   </property>
+  </action>
+  <action name="actionShow_OOP" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Out Of Plane Angle</string>
+   </property>
+  </action>
+  <action name="actionSolve_Orientation" >
+   <property name="text" >
+    <string>Solve Orientation</string>
+   </property>
+  </action>
+  <action name="actionIndexing_Viewer" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Indexing Viewer</string>
+   </property>
+  </action>
+  <action name="actionResolve_Orientation" >
+   <property name="text" >
+    <string>Resolve Orientation</string>
+   </property>
+  </action>
+  <action name="actionRotations_Toolbox" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Rotations Toolbox</string>
+   </property>
+  </action>
+  <action name="actionSet_Laue_Orientation" >
+   <property name="text" >
+    <string>Set Orientation</string>
+   </property>
+  </action>
+  <action name="actionReset_Orientation" >
+   <property name="text" >
+    <string>Reset Orientation</string>
+   </property>
+  </action>
+  <action name="action_Help" >
+   <property name="text" >
+    <string>QLaue Help</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl ?</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

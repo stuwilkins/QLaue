@@ -1,0 +1,245 @@
+<ui version="4.0" >
+ <class>UMatrixDialog</class>
+ <widget class="QDialog" name="UMatrixDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>409</width>
+    <height>190</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy>
+    <hsizetype>0</hsizetype>
+    <vsizetype>0</vsizetype>
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle" >
+   <string>Dialog</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>310</x>
+     <y>20</y>
+     <width>81</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>291</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>U Matrix Refections</string>
+   </property>
+   <widget class="QLineEdit" name="SK" >
+    <property name="geometry" >
+     <rect>
+      <x>130</x>
+      <y>120</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="SH" >
+    <property name="geometry" >
+     <rect>
+      <x>40</x>
+      <y>120</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="SL" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>120</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4" >
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>60</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>L</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>60</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>K</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Secondary (Z-axis)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Primary (X-axis)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6" >
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>120</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>L</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>120</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>K</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>H</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>120</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>H</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="PK" >
+    <property name="geometry" >
+     <rect>
+      <x>130</x>
+      <y>60</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="PL" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>60</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="PH" >
+    <property name="geometry" >
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>PH</tabstop>
+  <tabstop>PK</tabstop>
+  <tabstop>PL</tabstop>
+  <tabstop>SH</tabstop>
+  <tabstop>SK</tabstop>
+  <tabstop>SL</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>UMatrixDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
