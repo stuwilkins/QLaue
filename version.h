@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -41,5 +41,12 @@
 #endif
 
 #define APP_URL_TO_LOAD			"http://www.stuwilkins.com:81/downloads/QCrystal"
+
+// Now the SVN Headers 
+
+#define SVN_REVISION_TEXT		"$Revision:$"
+#define SVN_AUTHOR_TEXT			"$Author:$"
+#define SVN_DATE_TEXT			"$Date:$"
+#define SVN_HEADURL_TEXT		"$HeadURL:$"
 
 #endif
