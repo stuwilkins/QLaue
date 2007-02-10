@@ -17,16 +17,17 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
 #include <QtCore>
 #include <QtGui>
 #include "aboutbox.h"
+#include "version.h"
 #include "svn.h"
 
 AboutBox::AboutBox(QWidget *parent) : QDialog(parent)
@@ -35,9 +36,15 @@ AboutBox::AboutBox(QWidget *parent) : QDialog(parent)
 	ui.ImageLabel->setScaledContents(true);
 	ui.ImageLabel->setPixmap(QPixmap(":crystal.png"));
 	
-	ui.CopyrightNotice->setText(QString("%1 Stuart B. Wilkins 2006").arg(QChar(169)));
+	ui.CopyrightNotice->setText(QString("%1 Stuart B. Wilkins 2007").arg(QChar(169)));
 	
 	QString aboutText("<html><body>");
+	
+#ifdef SVN_REVISION_TEXT
+	aboutText += QString(SVN_REVISION_TEXT).replace("$","") + QString("<br>") 
+		+ QString(SVN_AUTHOR_TEXT).replace("$","") + QString("<br>") 
+		+ QString(SVN_DATE_TEXT).replace("$","") + QString("<br>");
+#endif
 	
 	QFile infoFile(":info.html");
 	if (infoFile.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -49,15 +56,6 @@ AboutBox::AboutBox(QWidget *parent) : QDialog(parent)
 	} else {
 		qDebug("AboutBox::AboutBox() : Unable to open info.html");
 	}
-	
-#ifdef SVN_REVISION	
-	aboutText += QString("<br>&nbsp;<br>")
-		+ QString(SVN_REVISION) + QString("<br>") 
-		+ QString(SVN_LAST_CHANGED_DATE).replace("(","<br>(")
-		+ QString("<br>&nbsp;<br>")
-		+ QString(SVN_LAST_CHANGED_AUTHOR) + QString("<br>")
-		+ QString(SVN_LAST_CHANGED_REV) + QString("<br>&nbsp;<br>");
-#endif
 
 	aboutText += "</body></html>";
 	ui.TextLabel->setAcceptRichText(true);

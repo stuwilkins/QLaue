@@ -44,9 +44,9 @@
 
 // Now the SVN Headers 
 
-#define SVN_REVISION_TEXT		"$Revision:$"
-#define SVN_AUTHOR_TEXT			"$Author:$"
-#define SVN_DATE_TEXT			"$Date:$"
-#define SVN_HEADURL_TEXT		"$HeadURL:$"
+#define SVN_REVISION_TEXT		"$Revision$"
+#define SVN_AUTHOR_TEXT			"$Author$"
+#define SVN_DATE_TEXT			"$Date$"
+#define SVN_HEADURL_TEXT		"$HeadURL$"
 
 #endif

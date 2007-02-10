@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>547</width>
-    <height>617</height>
+    <width>802</width>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>547</width>
+     <width>802</width>
      <height>22</height>
     </rect>
    </property>
@@ -89,6 +89,13 @@
     <addaction name="actionCalculate_Laue" />
     <addaction name="actionCalculate_Single_Crystal" />
    </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>Help</string>
+    </property>
+    <addaction name="action_About" />
+    <addaction name="action_Help" />
+   </widget>
    <widget class="QMenu" name="menu_Laue" >
     <property name="enabled" >
      <bool>true</bool>
@@ -113,22 +120,16 @@
     <addaction name="actionSet_Laue_Orientation" />
     <addaction name="actionReset_Orientation" />
     <addaction name="separator" />
+    <addaction name="actionRotate_about_axis" />
+    <addaction name="separator" />
     <addaction name="actionSolve_Orientation" />
     <addaction name="actionResolve_Orientation" />
     <addaction name="separator" />
     <addaction name="actionRe_orient" />
    </widget>
-   <widget class="QMenu" name="menuHelp" >
-    <property name="title" >
-     <string>Help</string>
-    </property>
-    <addaction name="action_About" />
-    <addaction name="action_Help" />
-   </widget>
    <addaction name="menuFile" />
    <addaction name="menuCrystal" />
    <addaction name="menu_Laue" />
-   <addaction name="menuSingle_Crystal" />
    <addaction name="menuWindow_2" />
    <addaction name="menuHelp" />
   </widget>
@@ -669,7 +670,12 @@
     <string>QLaue Help</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl ?</string>
+    <string/>
+   </property>
+  </action>
+  <action name="actionRotate_about_axis" >
+   <property name="text" >
+    <string>Rotate about axis</string>
    </property>
   </action>
  </widget>

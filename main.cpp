@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -30,6 +30,7 @@
 #include <QtXml/QtXml>
 #include "ui_mainwindow.h"
 #include "mainwindow.h"
+#include "version.h"
 #include "svn.h"
 
 int main(int argc, char *argv[])
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
 	
 	QCoreApplication::setOrganizationName("StuartWilkins");
 	QCoreApplication::setOrganizationDomain("stuwilkins.com");
-	QCoreApplication::setApplicationName("QLaue");
+	QCoreApplication::setApplicationName(APP_NAME);
 	
 #ifdef Q_WS_MAC
 	//Do nothing
@@ -51,8 +52,10 @@ int main(int argc, char *argv[])
 	QSplashScreen *splash = new QSplashScreen(QPixmap(":splash.png"));
 	splash->show();
 
-#ifdef SVN_REVISION
-	splash->showMessage(QString(SVN_REVISION).replace("$",""), Qt::AlignHCenter | Qt::AlignBottom);
+#ifdef SVN_REVISION_TEXT
+	splash->showMessage(QString("Version %1, %2")
+		.arg(APP_CURRENT_VERSION).arg(SVN_REVISION_TEXT).replace("$",""), 
+		Qt::AlignHCenter | Qt::AlignBottom);
 #endif
 
 	MainWindow *mainwindow = new MainWindow;

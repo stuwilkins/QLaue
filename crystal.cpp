@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -519,6 +519,45 @@ void Crystal::rotateUMatrix(void){
 	U = Z * Y * X * U;
 	calcUB();
 }	
+
+void Crystal::rotateUMatrixAbout(Matrix axis, double angle){
+	// First we need to make the Tphi matricies from
+	Matrix R(3,3), Tc(3,3);
+	
+	Matrix axis2(3,1), Tc2(3,1), Tc3(3,1);
+	
+	axis = axis / axis.mag();
+	
+	// choose either x or y axis
+	// (whichever is greater in angle)
+	
+	if(axis.dot(Matrix(0,1,0)) > axis.dot(Matrix(0,0,1)))
+		axis2 = Matrix(0,0,1);
+	else
+		axis2 = Matrix(0,1,0);
+	 
+	Tc3 = axis ^ axis2;
+	Tc3 = Tc3 / Tc3.mag();
+	Tc2 = Tc3 ^ axis;
+	Tc2 = Tc2 / Tc2.mag();
+										
+	for(int i = 0 ; i < 3 ; i++ ){
+		// Load up the matricies Tc and Td;
+		Tc.Set(i,0,axis.Get(i,0));
+		Tc.Set(i,1,Tc2.Get(i,0));
+		Tc.Set(i,2,Tc3.Get(i,0));
+	}
+			
+	Matrix X(3,3);
+	X.identity();
+	X = X.rotateX(angle);
+	
+	R.identity();
+	R = Tc * X * Tc.transpose();
+
+	U = R * U;
+	calcUB();
+}
 
 // ***************************************************************************************
 

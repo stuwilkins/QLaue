@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -389,11 +389,9 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	
 	// Define the origin of the film
 	
-	ox = 0; oy = 0;
-	imageox = 0; imageoy = 0;
+	laueOrigin = QPoint(0,0);
 	origin_circle = 0.5;
 
-	image_zoom = 1;
 	pixels_per_mm = 0.005;
 	rubberBand = 0;
 	
@@ -402,8 +400,6 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	num_hkl_labels = 1;
 	mouseover_hkl_label = 1;
 	
-	selectOrientationSpots = 0;
-	selectUBOrientationSpots = 0;
 	numOrientationSpots = 0;
 	numUBOrientationSpots = 0;
 	
@@ -417,9 +413,6 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	
 	imageInvert = false;
 	laueMessage = QString("");
-	
-	xrot = 0; yrot = 0; zrot = 0;
-	dragging = false;
 	
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
@@ -521,6 +514,9 @@ void LaueFilm::paintEvent(QPaintEvent *) {
 	
 	if(getBit(display,LaueFilm::DisplayUBIndexing))
 		paintUBOrientationSpots(&painter, laueRect);
+	
+	if(getBit(display,DisplayRotateAboutCross))
+		paintRotateAboutCross(&painter, laueRect);
 }
 
 void LaueFilm::print(QPrinter *printer, QPainter *painter, int mode){
@@ -584,6 +580,23 @@ void LaueFilm::print(QPrinter *printer, QPainter *painter, int mode){
 	ctx.clip = QRectF(0,0,innertext.width(), innertext.height());
 	//painter->drawRect(ctx.clip);
 	textbox.documentLayout()->draw(painter, ctx);
+}
+
+void LaueFilm::paintRotateAboutCross(QPainter *painter, QRect size){
+	QPoint cross = worldToPixels(rotateAboutAxisPoint, size);
+	int spot_size = (int)(max_spot_size * ((double)size.height() / 2000));
+	
+	painter->setBrush(Qt::NoBrush);
+	painter->setPen(QColor("darkMagenta"));
+	
+	QRect spot(0,0,spot_size,spot_size);
+		
+	spot.moveCenter(cross);
+		
+	if(size.contains(spot,true)) {
+		painter->drawLine(spot.topLeft(), spot.bottomRight());
+		painter->drawLine(spot.topRight(), spot.bottomLeft());
+	}
 }
 
 void LaueFilm::paintDummyFilm(QPainter *painter, QRect laue, QRect msg){
@@ -654,7 +667,7 @@ void LaueFilm::paintLaueAxes(QPainter *painter, QRect laue){
 	
 	painter->drawLine(0,0,0,-1 * pad / 2);
 	
-	double world_length = (double)length * 2 / (pixels_per_mm * image_zoom * laue.height()); 
+	double world_length = (double)length * 2 / (pixels_per_mm * laue.height()); 
 	painter->drawLine(-2 * length,0,0,0);
 	painter->drawLine(-2 * length,0,-2 * length,-1 * pad / 2);
 	painter->drawText(-2 * length + 5,0,length*2 - 10,-1 * pad / 2,Qt::AlignCenter,
@@ -666,45 +679,22 @@ void LaueFilm::paintOrigin(QPainter *painter, QRect size){
 	
 	painter->setBrush(QColor(0,0,255));
 	painter->resetMatrix();
+		
+	QPoint oxy = worldToPixels(QPointF(0,0),size);
+	painter->setPen(QColor(0,0,255));
+	painter->setBrush(Qt::NoBrush);
+	painter->translate(oxy);
+	painter->rotate(45);
+	QRect centrect1 = QRect(0,0,size.height() * origin_circle / 10,size.height() * origin_circle / 10);
+	QRect centrect2 = QRect(0,0,size.height() / 10,size.height() / 10);
 	
-	if(0){
+	centrect1.moveCenter(QPoint(0,0));
+	centrect2.moveCenter(QPoint(0,0));
+	painter->drawLine(centrect2.topLeft(), centrect2.bottomRight());
+	painter->drawLine(centrect2.topRight(), centrect2.bottomLeft());
+	painter->drawEllipse(centrect1);
 	
-		painter->setPen(Qt::NoPen);
-		
-		QRect origin = QRect(0,0,size.height() / 70,size.height() / 70);
-		QRect cpoint = QRect(0,0,size.height() / 80,size.height() / 80);
-		
-		origin.moveCenter(size.center());
-		cpoint.moveCenter(size.center());
-		cpoint.translate((int)((ox + imageox) * image_zoom * size.height()),(int)( (oy + imageoy) * image_zoom * size.height()));
-		origin.translate((int)((ox + imageox)  * image_zoom * size.height()),(int)( (oy + imageoy) * image_zoom * size.height()));
-		painter->drawEllipse(origin);
-		
-		int pad = size.height() / 12;
-		painter->drawEllipse(cpoint.translated(pad * -1,0));
-		painter->drawEllipse(cpoint.translated(pad,0));
-		painter->drawEllipse(cpoint.translated(0,pad * -1));
-		painter->drawEllipse(cpoint.translated(0,pad));
-		
-	} else {
-		
-		QPoint oxy = QPoint((int)((ox + imageox) * image_zoom * size.height()),(int)( (oy + imageoy) * image_zoom * size.height()));
-		
-		painter->setPen(QColor(0,0,255));
-		painter->setBrush(Qt::NoBrush);
-		painter->translate(size.center() + oxy);
-		painter->rotate(45);
-		QRect centrect1 = QRect(0,0,size.height() * origin_circle / 10,size.height() * origin_circle / 10);
-		QRect centrect2 = QRect(0,0,size.height() / 10,size.height() / 10);
-		
-		centrect1.moveCenter(QPoint(0,0));
-		centrect2.moveCenter(QPoint(0,0));
-		painter->drawLine(centrect2.topLeft(), centrect2.bottomRight());
-		painter->drawLine(centrect2.topRight(), centrect2.bottomLeft());
-		painter->drawEllipse(centrect1);
-		
-		painter->resetMatrix();
-	}
+	painter->resetMatrix();
 }
 
 void LaueFilm::paintImage(QPainter *painter, QRect size)
@@ -727,7 +717,7 @@ void LaueFilm::paintImage(QPainter *painter, QRect size)
 	importedImagePos = paintsize.topLeft();
 	painter->drawImage(importedImagePos, newimage);
 	
-	if(selectOrientationSpots || selectUBOrientationSpots){
+	if(getBit(userAction, UASelectOrientation) || getBit(userAction, UASelectUBOrientation)){
 		if(QRect(importedImagePos.x(), importedImagePos.y(), newimage.width(),newimage.height()).contains(zoomImagePos)){
 			QRect cutSize = QRect(0,0,15,15);
 			cutSize.moveCenter(zoomImagePos - importedImagePos);
@@ -813,8 +803,8 @@ void LaueFilm::paintLaue(QPainter *painter, QRect size) {
 	// Calculate the screensize
 	
 	if(getBit(display, LaueFilm::DisplayIntensities)){
-		double screeny = size.height() / (2 * pixels_per_mm*image_zoom*size.height());
-		double screenx = size.width() / (2 * pixels_per_mm*image_zoom*size.height());
+		double screeny = size.height() / (2 * pixels_per_mm*size.height());
+		double screenx = size.width() / (2 * pixels_per_mm*size.height());
 		double screenymax = screeny;
 		double screenymin = (-1.0 * screeny);
 		double screenxmax = screenx;
@@ -890,16 +880,14 @@ void LaueFilm::paintLaue(QPainter *painter, QRect size) {
 void LaueFilm::setU(double h1, double k1, double l1,
 					double h2, double k2, double l2){
 	crystal->setU(h1,k1,l1,h2,k2,l2);
-	xrot = 0; yrot = 0; zrot = 0;
 	reCalc();
-	emit rotationsChanged(xrot, yrot, zrot);
+	emit rotationsChanged(0,0,0);
 }
 
 void LaueFilm::setU(Matrix U){
 	crystal->setU(U);
-	xrot = 0; yrot = 0; zrot = 0;
 	reCalc();
-	emit rotationsChanged(xrot, yrot, zrot);
+	emit rotationsChanged(0,0,0);
 }
 
 void LaueFilm::setFSDistance(double d){
@@ -908,12 +896,12 @@ void LaueFilm::setFSDistance(double d){
 }
 
 void LaueFilm::setZoom(double zoom){
-	image_zoom = zoom / 100;
 	update();
 }
 
 void LaueFilm::mousePressEvent(QMouseEvent *event){
-	if(selectOrientationSpots) {
+
+	if(getBit(userAction,LaueFilm::UASelectOrientation)) {
 		
 		if(laueRect.contains(event->pos())){
 			QPointF spot = pixelsToWorld(event->pos(), laueRect);
@@ -925,7 +913,7 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 	
 	}
 	
-	if(selectUBOrientationSpots) {
+	if(getBit(userAction, LaueFilm::UASelectUBOrientation)) {
 		if(laueRect.contains(event->pos())){
 			QPointF spot = pixelsToWorld(event->pos(), laueRect);
 			UBOrientationSpotsX[numUBOrientationSpots] = (double)spot.x();
@@ -935,7 +923,7 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 		}
 		
 		if(numUBOrientationSpots == 2){
-			selectUBOrientationSpots = false;
+			userAction = UANone;
 			displayMessage(QString(""));
 			update();
 			resetOrientation();
@@ -958,12 +946,11 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 	
 	if(getBit(userAction,LaueFilm::UASetOrigin)){
 		// We were asked to define the origin 
-		QPoint cent = laueRect.center();
-		ox = ((event->x() - cent.x() + imageox) / (image_zoom * laueRect.height()));
-		oy = ((event->y() - cent.y() + imageoy) / (image_zoom * laueRect.height()));
+		laueOrigin = (event->pos() - laueRect.center());
+		laueOrigin /= laueRect.height();
 		userAction = LaueFilm::UANone;
 		setCursor(Qt::ArrowCursor);
-		setMouseTracking(TRUE);
+		setMouseTracking(true);
 		setBit(&display, LaueFilm::DisplayLaue, true);
 		setBit(&display, LaueFilm::DisplayOrigin, true);
 		clearMessage();
@@ -983,6 +970,22 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 		return;
 	}
 	
+	if(getBit(userAction, UARotateAboutAxis)){
+		if(userActionStage == 1){
+			userActionStage = 2;
+			displayMessage(QString("Use mouse to rotate about axis"));
+			rotateAboutAxisPoint = pixelsToWorld(event->pos(), laueRect);
+			setBit(&display, DisplayRotateAboutCross, true);
+			setCursor(Qt::ArrowCursor);
+			update();
+		} else if(userActionStage == 2){
+			userActionStage = 3;
+			moveStart = event->pos();
+		}
+		event->accept();
+		return;
+	}
+	
 	if(QApplication::keyboardModifiers()  == Qt::ShiftModifier){
 		QPointF spot = pixelsToWorld(event->pos(), laueRect);
 		int snum = laue->findSpot(spot.x(),spot.y(),1);
@@ -991,111 +994,70 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 			addIndexLabel(laue->getSpot(snum)->H(), laue->getSpot(snum)->K(), laue->getSpot(snum)->L());
 			update();
 		}
-	} else {
-		move_start_x = event->x();
-		move_start_y = event->y();
-		move_start_xrot = xrot;
-		move_start_yrot = yrot;
-		move_start_zrot = zrot;
-	
-		if(event->button() == Qt::RightButton){
-			dragging = RotateOnlyX;
-		} else if(event->button() == Qt::LeftButton){
-			dragging = RotateYZ;
-		} else {
-			dragging = NoRotate;
-		}
+		event->accept();
+		return;
 	}
+	
+	moveStart = event->pos();
+	
+	if(event->button() == Qt::RightButton){
+		setBit(&userAction, UARotateX, true);
+	} else if(event->button() == Qt::LeftButton){
+		setBit(&userAction, UARotateYZ, true);
+	} else {
+		userAction = UANone;
+	}
+		
+	//qDebug("LaueFilm::mousePressEvent() : userAction = %d",userAction);
+	event->accept();
+	return;
 }
 
 void LaueFilm::mouseReleaseEvent(QMouseEvent *event){
-	if(userAction){
-		if(getBit(userAction,LaueFilm::UAMeasureScale)){
-			userAction = LaueFilm::UANone;
-		
-			rubberBand->hide();
-			// Last set of coordinates
-		
-			QPoint dxy = event->pos() - rubberBandOrigin;
-		
-			FilmSizeDialog dialog;
-			if(dialog.exec() == QDialog::Accepted){
-				double reallength = dialog.getFilmWidth();
-				double pxlength = dxy.x();
-				pixels_per_mm = (pxlength / reallength) / (image_zoom * laueRect.height());
-			}
-		
-			setCursor(Qt::ArrowCursor);
-			setMouseTracking(true);
-			setBit(&display, LaueFilm::DisplayLaue, true);
-			setBit(&display, LaueFilm::DisplayOrigin, true);
-			update();
-			
-		} else if(getBit(userAction,LaueFilm::UAMeasureZoom)){
-			
-			userAction = LaueFilm::UANone;
-			QImage *image;
-			double scalef;
-			if(image_zoom > 1){
-				image = importedScaledImage;
-			} else {
-				image = importedImage;
-			}
-		
-			scalef = (double)image->height() / (double)laueRect.height();
-		
-			QPoint dxy = ( laueRect.center() -  rubberBand->geometry().center() );
-		
-			imageox = imageox + ((double)dxy.x() /( image_zoom * (double)laueRect.height()));
-			imageoy = imageoy + ((double)dxy.y() /( image_zoom * (double)laueRect.height()));
-			image_zoom = image_zoom * (double)laueRect.height() / (double)rubberBand->geometry().height();
-		
-			dxy = rubberBand->geometry().topLeft() - importedImagePos;
-		
-			QRect source((int)(dxy.x() * scalef),
-						(int)(dxy.y() * scalef),
-						(int)(rubberBand->geometry().width() * scalef),
-						(int)(rubberBand->geometry().height() * scalef));
-		
-			*importedScaledImage = image->copy(source);
-			rubberBand->hide();
-			clearMessage();
-			update();
-		
-		} 
-		
-		/* else if(setxaxis){
-		if(laueRect.contains(event->pos())){
-			QPointF spot = pixelsToWorld(event->pos(), laueRect);
-			
-			int snum = laue->findSpot(spot.x(),spot.y(),1);
-			
-			if(snum != -1){
-				Matrix zaxis(3,1);
-				Matrix xaxis(3,1);
-				zaxis = crystal->zAxis();
-				xaxis = crystal->xAxis();
-				Matrix newxaxis = Matrix(laue->getSpot(snum)->H(),
-										 laue->getSpot(snum)->K(),
-										 laue->getSpot(snum)->L());
-				
-				crystal->setU(newxaxis, zaxis);
-				
-				laue->reorientation.setUB(crystal->getUB());
-				laue->reorientation.setPrimary(xaxis);
-				laue->reorientation.setSecondary(zaxis);
-				laue->reorientation.calc(Reorientation::Zone);
-				double* angles = laue->reorientation.getAngles(Reorientation::RotateYZ);
-				double xrot = angles[0];
-				double yrot = angles[1];
-				double zrot = angles[2];
-				emit rotateTo(xrot, yrot, zrot);
-				setxaxis = false;
-			}
-		} */
-	} else if(dragging) {
-		dragging = NoRotate;
+
+	if(getBit(userAction, UARotateX)) {
+		userAction = UANone;
+		event->accept();
+		return;
+	}
+	
+	if(getBit(userAction, UARotateYZ)) {
+		userAction = UANone;
+		event->accept();
+		return;
 	} 
+
+	if(getBit(userAction, UARotateAboutAxis) && (userActionStage == 3)){
+		userAction = UANone;
+		setBit(&display, DisplayRotateAboutCross, false);
+		update();
+		event->accept();
+		return;
+	}
+
+	if(getBit(userAction,LaueFilm::UAMeasureScale)){
+		userAction = LaueFilm::UANone;
+		
+		rubberBand->hide();
+		// Last set of coordinates
+		
+		QPoint dxy = event->pos() - rubberBandOrigin;
+		
+		FilmSizeDialog dialog;
+		if(dialog.exec() == QDialog::Accepted){
+			double reallength = dialog.getFilmWidth();
+			double pxlength = dxy.x();
+			pixels_per_mm = (pxlength / reallength) / (laueRect.height());
+		}
+		
+		setCursor(Qt::ArrowCursor);
+		setMouseTracking(true);
+		setBit(&display, LaueFilm::DisplayLaue, true);
+		setBit(&display, LaueFilm::DisplayOrigin, true);
+		update();
+		event->accept();
+		return;
+	}
 }
 
 void LaueFilm::setPixelsPerMMFromImage(void){
@@ -1104,48 +1066,79 @@ void LaueFilm::setPixelsPerMMFromImage(void){
 
 void LaueFilm::mouseMoveEvent(QMouseEvent *event){
 	
-	if(getBit(userAction,LaueFilm::UAMeasureZoom) || getBit(userAction,LaueFilm::UAMeasureScale)){
+	//qDebug("LaueFilm::mouseMoveEvent() : userAction = %d",userAction);
+	
+	if(	getBit(userAction,LaueFilm::UAMeasureZoom) || 
+		getBit(userAction,LaueFilm::UAMeasureScale)){
+		
 		rubberBand->setGeometry(QRect(rubberBandOrigin, event->pos()).normalized());
-	} else if(userAction && LaueFilm::UAMeasureZoom) {
+		event->accept();
+		return;
+	}
+	
+	if(getBit(userAction,LaueFilm::UASetOrigin)) {
 		if(laueRect.contains(event->pos())){
-			ox = ((event->x() + imageox - laueRect.center().x()) / (image_zoom * laueRect.height()));
-			oy = ((event->y() + imageoy - laueRect.center().y()) / (image_zoom * laueRect.height()));
+			laueOrigin = (event->pos() - laueRect.center());
+			laueOrigin /= laueRect.height();
 			update();
+			event->accept();
+			return;
 		}
-	} else if(dragging == RotateYZ){
-		//qDebug("rotateyz");
-		int dx = event->x() - move_start_x;
-		int dy = event->y() - move_start_y;
+	}
+	
+	if(getBit(userAction, UARotateYZ)){
 		
-		double angley = atan(dy / (laue->getDistance() * pixels_per_mm * image_zoom * laueRect.height())) / 2;
-		double anglex = atan(dx / (laue->getDistance() * pixels_per_mm * image_zoom * laueRect.height())) / 2;
+		QPointF moveYZ = pixelsToWorld(event->pos(), laueRect) - pixelsToWorld(moveStart, laueRect);
 		
-		emit rotationsChanged(0, (-1.0 * angley), anglex);
-		move_start_x = event->x();
-		move_start_y = event->y();
-	} else if(dragging == RotateOnlyX){
-		//qDebug("rotatex");
+		double angley = atan(moveYZ.y() / laue->getDistance()) / 2;
+		double anglex = atan(moveYZ.x() / laue->getDistance()) / 2;
 		
-		int xorigin = (int)(ox * image_zoom * laueRect.height()) + laueRect.center().x();
-		int yorigin = (int)(oy * image_zoom * laueRect.height()) + laueRect.center().y();
-		int v1x = move_start_x - xorigin;
-		int v1y = move_start_y - yorigin;
-		int v2x = event->x() - xorigin;
-		int v2y = event->y() - yorigin;
+		emit rotationsChanged(0, angley, anglex);
 		
-		double dot = (v1x * v2x) + (v1y * v2y);
-		double mag = sqrt(pow((double)v1x,2) + pow((double)v1y,2)) 
-			* sqrt(pow((double)v2x,2) + pow((double)v2y,2));
-		int cross = (v1x * v2y) - (v2x * v1y);
+		moveStart = event->pos();
+		
+	} else if(getBit(userAction, UARotateX)){
+		
+		QPointF stopX = pixelsToWorld(event->pos(), laueRect);
+		QPointF startX = pixelsToWorld(moveStart, laueRect);
+		
+		double dot = (startX.x() * stopX.x()) + (startX.y() * stopX.y());
+		double mag = sqrt(pow((double)startX.x(),2) + pow((double)startX.y(),2)) 
+				   * sqrt(pow((double)stopX.x(),2) + pow((double)stopX.y(),2));
+		
+		int cross = (startX.x() * stopX.y()) - (startX.y() * stopX.x());
 		double angle = acos(dot / mag);
 		
-		if(cross >= 0)
+		if(cross > 0)
 			angle = -1.0 * angle;
 
-		emit rotationsChanged(-1.0 * angle , 0.0, 0.0);
-		move_start_x = event->x();
-		move_start_y = event->y();
-	} else if(selectOrientationSpots || selectUBOrientationSpots) {
+		emit rotationsChanged(angle, 0.0, 0.0);
+		moveStart = event->pos();
+		
+	} else if (getBit(userAction, UARotateAboutAxis)) {
+		if(userActionStage == 3){
+			QPointF stopX = pixelsToWorld(event->pos(), laueRect) - rotateAboutAxisPoint;
+			QPointF startX = pixelsToWorld(moveStart, laueRect) - rotateAboutAxisPoint;
+			
+			double dot = (startX.x() * stopX.x()) + (startX.y() * stopX.y());
+			double mag = sqrt(pow((double)startX.x(),2) + pow((double)startX.y(),2)) 
+				   * sqrt(pow((double)stopX.x(),2) + pow((double)stopX.y(),2));
+		
+			int cross = (startX.x() * stopX.y()) - (startX.y() * stopX.x());
+			double angle = acos(dot / mag);
+		
+			if(cross > 0)
+				angle = -1.0 * angle;
+			
+			Matrix pri = laue->filmposToVector(rotateAboutAxisPoint.x(),rotateAboutAxisPoint.y());
+			crystal->rotateUMatrixAbout(pri, angle);
+			moveStart = event->pos();
+			emit rotationsChanged(0.0 ,0.0 , 0.0);
+			update();
+		}
+		event->accept();
+		return;
+	} else if(getBit(userAction, UASelectOrientation) || getBit(userAction, UASelectUBOrientation)) {
 		setCursor(Qt::CrossCursor);
 		// If we are displaying an image then cut out 50 pixels square
 		// and send this pixmap as a signal.
@@ -1195,8 +1188,8 @@ void LaueFilm::mouseMoveEvent(QMouseEvent *event){
 void LaueFilm::keyPressEvent(QKeyEvent *event){
 	if(event->key() == Qt::Key_Escape){
 		
-		if(selectOrientationSpots){
-			selectOrientationSpots = false;
+		if(getBit(userAction, UASelectOrientation)){
+			userAction = UANone;
 			displayMessage(QString("Calculating .."));
 			update();
 			
@@ -1231,7 +1224,7 @@ void LaueFilm::keyPressEvent(QKeyEvent *event){
 	}
 	
 	bool flag = true;
-	double step = 0.1;
+	double step = 0.025;
 	
 	if(QApplication::keyboardModifiers()  == Qt::ShiftModifier){
 		step = step * 10;
@@ -1274,37 +1267,29 @@ void LaueFilm::keyPressEvent(QKeyEvent *event){
 	}
 }
 
-double LaueFilm::pixelsToMm(int pixels){
-	return (double)pixels/(pixels_per_mm * image_zoom * laueRect.height());
-}
-
-int LaueFilm::mmToPixels(double mm){
-	return (int)(mm * pixels_per_mm * image_zoom * laueRect.height());
-}
-
 QPoint LaueFilm::worldToPixels(QPointF world, QRect rect){
-	int x = (int)(world.x()*pixels_per_mm*image_zoom*rect.height());
-	int y = (int)(world.y()*pixels_per_mm*image_zoom*rect.height());
+	int x = (int)(world.x()*pixels_per_mm*rect.height());
+	int y = (int)(world.y()*pixels_per_mm*rect.height());
 				
-	QPoint pixel = QPoint((int)((x + rect.center().x() + (int)((ox + imageox)* image_zoom * rect.height()))),
-						  (int)((y * -1) + rect.center().y() + (int)((oy + imageoy) * image_zoom * rect.height())));
+	QPoint pixel = QPoint((int)((x + rect.center().x() + (int)(laueOrigin.x() * rect.height()))),
+						  (int)((y * -1) + rect.center().y() + (int)(laueOrigin.y() * rect.height())));
 	return pixel;
 }
 
 QPointF LaueFilm::pixelsToWorld(QPoint pixel, QRect rect){
-	int xcent = (int)((ox + imageox) * image_zoom * rect.height()) + rect.center().x();
-	int ycent = (int)((oy + imageoy) * image_zoom * rect.height()) + rect.center().y();
+	int xcent = (int)((laueOrigin.x()) * rect.height()) + rect.center().x();
+	int ycent = (int)((laueOrigin.y()) * rect.height()) + rect.center().y();
 	
-	QPointF world((double)(pixel.x() - xcent) / (pixels_per_mm*image_zoom * rect.height()),
-				  (double)(pixel.y() - ycent) / (-1 * pixels_per_mm*image_zoom * rect.height()));
+	QPointF world((double)(pixel.x() - xcent) / (pixels_per_mm * rect.height()),
+				  (double)(pixel.y() - ycent) / (-1 * pixels_per_mm * rect.height()));
 	return world;
 }
 
-void LaueFilm::measureXAxis(void) {
-	//setxaxis = true;
-	//setCursor(Qt::BlankCursor);
-	//setMouseTracking(true);
-	//displayMessage(QString("Click on spot to define X-axis."));
+void LaueFilm::rotateAboutAxis(void) {
+	setBit(&userAction, UARotateAboutAxis, true);
+	userActionStage = 1;
+	displayMessage(QString("Click on point to rotate about."));
+	setCursor(Qt::CrossCursor);
 }
 
 void LaueFilm::setOrigin(void) {
@@ -1335,10 +1320,12 @@ void LaueFilm::measureZoom(void) {
 }
 
 void LaueFilm::resetZoom(void) {
+	/*
 	*importedScaledImage = *importedImage;
 	imageox = 0; imageoy = 0;
 	image_zoom = 1;
 	update();
+	*/
 }
 
 void LaueFilm::displayMessage(const QString message){
@@ -1352,8 +1339,7 @@ void LaueFilm::clearMessage(void){
 }
 
 void LaueFilm::resetView(void){
-	ox = 0;
-	oy = 0;
+	laueOrigin = QPointF(0,0);
 	pixels_per_mm = 5;
 	update();
 }
@@ -1445,7 +1431,7 @@ void LaueFilm::resolveOrientation(void){
 
 void LaueFilm::solveOrientation(void){
 	
-	selectOrientationSpots = true;
+	setBit(&userAction, UASelectOrientation, true);
 	numOrientationSpots = 0;
 	setBit(&display, LaueFilm::DisplayLaue, false);
 	setBit(&display, LaueFilm::DisplayIndexing, true);
@@ -1461,7 +1447,7 @@ void LaueFilm::clearOrientation(void) {
 }
 
 void LaueFilm::setOrientation(void) {
-	selectUBOrientationSpots = true;
+	setBit(&userAction, UASelectUBOrientation,true);
 	numUBOrientationSpots = 0;
 	setBit(&display, LaueFilm::DisplayIndexing, false);
 	setBit(&display, LaueFilm::DisplayUBIndexing, true);

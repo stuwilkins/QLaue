@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -99,6 +99,8 @@ MainWindow::MainWindow() : QMainWindow() {
 	recalculated();
 	readSettings();
 	
+	setCurrentFile(QString(""));
+	
 	// Initialize help viewer (QT Assistant)
 	
 	initializeAssistant();
@@ -119,6 +121,8 @@ void MainWindow::initializeAssistant() {
 	CFRelease(pluginRef);
 	CFRelease(macPath);
 #endif
+
+	//assistantDir = QString("/usr/local/Trolltech/qt/bin");
 
 	qDebug("MainWindow::initializeAssistant() : Looking for assistant in %s",
 		   qPrintable(assistantDir));
@@ -162,7 +166,7 @@ void MainWindow::createDockWindows(void){
 	rotateWidgetDock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
 	rotateWidgetDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	rotateWidgetDock->setWidget(rotate);
-	addDockWidget(Qt::LeftDockWidgetArea, rotateWidgetDock);
+	addDockWidget(Qt::RightDockWidgetArea, rotateWidgetDock);
 	rotateWidgetDock->hide();
 	
 	textViewDock = new QDockWidget(tr("Data View"), this);
@@ -234,7 +238,9 @@ void MainWindow::createConnections(void){
 	
 	connect(film->getLaue(),SIGNAL(calcStarted()), this, SLOT(setProgressBar()));
 	connect(film->getLaue(),SIGNAL(spotsToGo(int)), progressBar, SLOT(setValue(int)));
-	connect(film->getLaue(),SIGNAL(calculated()), this, SLOT(resetStatusBar()));}
+	connect(film->getLaue(),SIGNAL(calculated()), this, SLOT(resetStatusBar()));
+
+}
 
 void MainWindow::newCrystal(void){
 	setupCrystal();
@@ -252,9 +258,6 @@ void MainWindow::newCrystal(void){
 	
 	film->clearOrientation();
 	
-	// Set the system to free rotate
-	
-	rotate->setFreeRotate(false);
 }
 
 void MainWindow::setupCrystal(void){
@@ -286,13 +289,12 @@ void MainWindow::readSettings(void){
 	int screenHeight = QApplication::desktop()->height();
 	
 	settings.beginGroup("App");
-	int thisVersion = settings.value("revision", 0).toInt();
-	qDebug("MainWindow::readSettings() : Last run revision %d", thisVersion);
+	double thisVersion = settings.value("version", 0).toDouble();
+	qDebug("MainWindow::readSettings() : Last run version %f", thisVersion);
 	settings.endGroup();
-	
-#ifdef SVN_REVISION_NUMBER	
-	if(SVN_REVISION_NUMBER == thisVersion) {
-		qDebug("MainWindow::readSettings() : Revision matches last run.");
+		
+	if(APP_CURRENT_VERSION == thisVersion) {
+		qDebug("MainWindow::readSettings() : Version matches last run.");
 		settings.beginGroup("MainWindow");
 		resize(settings.value("size", QSize(screenWidth*0.9, screenHeight*0.9)).toSize());
 		move(settings.value("pos", QPoint(35, 20)).toPoint());
@@ -303,21 +305,16 @@ void MainWindow::readSettings(void){
 		}
 		settings.endGroup();
 	} else {
-		qDebug("MainWindow::readSettings() : Revision number does not match last run");
+		qDebug("MainWindow::readSettings() : Version number does not match last run");
 		resize(QSize(screenWidth*0.9, screenHeight*0.9));
 		move(QPoint(35, 20));
 	}
-		
-#else
-	qDebug("MainWindow::readSettings() : No current revision information (check svn.h)");
-	resize(QSize(screenWidth*0.9, screenHeight*0.9));
-	move(QPoint(35, 20));
-#endif
 	
 	ui.actionText_Viewer->setChecked(textViewDock->isVisibleTo(this));
 	ui.actionCrystal_Orientation_View->setChecked(crystalDock->isVisibleTo(this));
 	ui.actionIndexing_Viewer->setChecked(indexingDock->isVisibleTo(this));
-	ui.actionRotations->setChecked(rotateWidgetDock->isVisibleTo(this));
+	ui.actionRotations_Toolbox->setChecked(rotateWidgetDock->isVisibleTo(this));
+	qDebug("MainWindow::readSettings() : rotate = %d", rotateWidgetDock->isVisibleTo(this));
 	
 }
 
@@ -326,9 +323,6 @@ void MainWindow::writeSettings(void){
 	qDebug("MainWindow::writeSettings()");
 	
 	settings.beginGroup("App");
-#ifdef SVN_REVISION_NUMBER
-	settings.setValue("revision",(int)SVN_REVISION_NUMBER);
-#endif
 	settings.setValue("version",(double)APP_CURRENT_VERSION);
 	settings.endGroup();
 	
@@ -393,6 +387,7 @@ void MainWindow::setupActions(void){
 	connect(ui.actionSolve_Orientation, SIGNAL(triggered()), film, SLOT(solveOrientation()));
 	connect(ui.actionResolve_Orientation, SIGNAL(triggered()), film, SLOT(resolveOrientation()));
 	connect(ui.actionSet_Laue_Orientation, SIGNAL(triggered()), film, SLOT(setOrientation()));
+	connect(ui.actionRotate_about_axis, SIGNAL(triggered()), film, SLOT(rotateAboutAxis()));
 	
 	// Window menu
 	
@@ -427,6 +422,13 @@ void MainWindow::setupActions(void){
 				this, SLOT(openRecent()));
 	}
 
+	// Set the defaults
+	
+	// Set the system to free rotate
+	
+	ui.actionSet_Free_Rotate->setChecked(true);
+	
+	// For macos systems remove the separator before Quit in the file menu.
 	
 #ifdef Q_WS_MAC
 	ui.actionQuitSep->setVisible(false);
@@ -502,7 +504,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 {
 	currentCrystalFilename = fileName;
 	if (currentCrystalFilename.isEmpty())
-		setWindowTitle(tr(APP_NAME));
+		setWindowTitle(tr("%1 Version %2").arg(APP_NAME).arg(APP_CURRENT_VERSION));
 	else
 		setWindowTitle(tr("%2 - [*]%1").arg(strippedName(currentCrystalFilename))
 					   .arg(tr(APP_NAME)));

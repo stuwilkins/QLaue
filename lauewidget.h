@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -112,29 +112,29 @@ private:
 	LaueOrientations *orientations;
 	int numOrientations;
 	
+	
+	// Variables to control the user action
+	
 	int display;
 	int userAction;
 	int userActionStage;
+	QPoint moveStart;
+	
+	// Variables to convert from world to pixels
+	
+	QPointF laueOrigin;
+	QPointF imageOrigin;
+	
+	// Bitmap laue image variables
+	
 	bool imageInvert;
-	int dragging;
-	
-	enum {
-		RotateOnlyX = 1,
-		RotateYZ = 2,
-		NoRotate = 0
-	};
-	
-	double ox, oy;
-	double imageox, imageoy;
-	double origin_circle;
 	double pixels_per_mm;
-	double image_zoom;
+	
+	// Laue parameters
+	
+	double origin_circle;
 	int max_spot_size;
 	
-	int move_start_x, move_start_y;
-	
-	int selectOrientationSpots;
-	int selectUBOrientationSpots;
 	int numOrientationSpots;
 	int numUBOrientationSpots;
 	double *orientationSpotsX;
@@ -142,8 +142,7 @@ private:
 	double UBOrientationSpotsX[2];
 	double UBOrientationSpotsY[2];
 	
-	double xrot, yrot, zrot;
-	double move_start_yrot, move_start_zrot, move_start_xrot;
+	QPointF rotateAboutAxisPoint;
 	
 	QString laueMessage;
 	QRect laueRect;
@@ -168,6 +167,7 @@ private:
 	void paintOrigin(QPainter *painter, QRect size);
 	void paintIndexing(QPainter *painter, QRect size);
 	void paintUBOrientationSpots(QPainter *painter, QRect size);
+	void paintRotateAboutCross(QPainter *painter, QRect size);
 	
 	void addIndexLabel(double h, double k, double l);
 	double pixelsToMm(int pixels);
@@ -193,11 +193,11 @@ public:
 	LaueIndexingThread* getIndexing(void)	{return laueIndexing; }
 	LaueOrientations* getOrientations(void) {return orientations; }
 	
-	double originX(void)			{ return ox; }
-	double originY(void)			{ return oy; }
+	double originX(void)			{ return laueOrigin.x(); }
+	double originY(void)			{ return laueOrigin.y(); }
 	double scale(void)				{ return pixels_per_mm; }
-	void setOriginX(double x)		{ ox = x; }
-	void setOriginY(double x)		{ oy = x; }
+	void setOriginX(double x)		{ laueOrigin.setX(x); }
+	void setOriginY(double x)		{ laueOrigin.setY(x); }
 	void setScale(double x)			{ pixels_per_mm = x; }
 	
 	enum {
@@ -210,7 +210,12 @@ public:
 		UASetOrigin =				0x001,
 		UAMeasureScale =			0x002,
 		UAMeasureZoom =				0x004,
-		UASetXAxis =				0x008
+		UASetXAxis =				0x008,
+		UARotateX =					0x010,
+		UARotateYZ =				0x020,
+		UARotateAboutAxis =			0x040,
+		UASelectOrientation =		0x080,
+		UASelectUBOrientation =		0x100
 	};
 	
 	enum {
@@ -223,7 +228,13 @@ public:
 		DisplayIntensitiesColor =	0x040,
 		DisplayIndexing =			0x080,
 		DisplayUBIndexing =			0x100,
-		DisplayImageInverted =		0x200
+		DisplayImageInverted =		0x200,
+		DisplayRotateAboutCross =	0x400
+	};
+	
+	enum {
+		ImageNone =					0,
+		ImageInvert =				0x001
 	};
 	
 private slots:
@@ -233,7 +244,7 @@ public slots:
 	void setOrigin(void);
 	void measureScale(void);
 	void measureZoom(void);
-	void measureXAxis(void);
+	void rotateAboutAxis(void);
 	void resetZoom(void);
 	void setU(double h1, double k1, double l1,
 			  double h2, double k2, double l2);

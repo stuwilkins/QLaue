@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -166,6 +166,7 @@ public:
 	void setGoniometer(void);
 	void rotateUMatrix(double a, double b, double c);
 	void rotateUMatrix(void);
+	void rotateUMatrixAbout(Matrix axis, double angle);
 	
 	double getGonioX(void)			{ return gonioX; }
 	double getGonioY(void)			{ return gonioY; }
