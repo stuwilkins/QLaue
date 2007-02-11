@@ -62,10 +62,13 @@ name(NULL)
 	natoms = 0;
 	natoms_sggen = 0;
 	sg = &spacegroups[0];
+
+	freeRotate = freeRotate;
 	
 	U.identity();
 	R.identity();
 	Rinv.identity();
+
 	setLattice(5.4,5.4,5.4,M_PI / 2, M_PI/2, M_PI/2);
 	return;
 }
@@ -122,6 +125,8 @@ name(NULL)
 	volumes = C.volumes;
 	
 	sg = C.sg;
+	
+	freeRotate = C.freeRotate;
 	
 	B = C.B;
 	Binv = C.Binv;	
@@ -186,6 +191,8 @@ Crystal& Crystal::operator=(const Crystal &C) {
 	volumes = C.volumes;
 	
 	sg = C.sg;
+	
+	freeRotate = C.freeRotate;
 	
 	B = C.B;
 	Binv = C.Binv;
@@ -318,6 +325,9 @@ void Crystal::calcUB(void){
 
 void Crystal::setU(const Matrix newU){
 	U = newU;
+	// Zero the rotations and R matrix
+	gonioX = 0; gonioY = 0; gonioZ = 0;
+	R.identity() ; Rinv.identity();
 	calcUB();
 }
 
@@ -348,13 +358,15 @@ void Crystal::setU(Matrix Primary, Matrix Secondary){
 	Y_hat = Z_hat ^ X_hat;
 	Z_hat = X_hat ^ Y_hat;
 	
+	Matrix newU(3,3);
+	
 	for(int i = 0; i < 3 ; i++){
-		U.Set(0,i,X_hat.Get(i,0));
-		U.Set(1,i,Y_hat.Get(i,0));
-		U.Set(2,i,Z_hat.Get(i,0));
+		newU.Set(0,i,X_hat.Get(i,0));
+		newU.Set(1,i,Y_hat.Get(i,0));
+		newU.Set(2,i,Z_hat.Get(i,0));
 	}
 	
-	calcUB();
+	setU(newU);
 }	
 
 void Crystal::setU(Matrix Primary, Matrix Secondary, Matrix PrimaryHKL, Matrix SecondaryHKL){
@@ -395,7 +407,7 @@ void Crystal::setU(Matrix Primary, Matrix Secondary, Matrix PrimaryHKL, Matrix S
 	}
 	
 	newU = Td * Tc.transpose();
-	this->setU(newU);
+	setU(newU);
 }
 
 Matrix Crystal::toQ(double x, double y, double z){
@@ -481,16 +493,55 @@ Matrix Crystal::getUBinv(void){
 	return UBinv * Rinv;
 }
 
-void Crystal::setGoniometerRotationsBy(double a, double b, double c){
-	gonioX = gonioX + a; 
-	gonioY = gonioY + b; 
-	gonioZ = gonioZ + c; 
-	setGoniometer();
+// Rotation routines
+
+void Crystal::setFreeRotate(bool state){
+	freeRotate = state;
+
+	if(freeRotate){
+		// Free rotate so rotate the actual U Matrix
+		// by the current gonio angles
+		Matrix X(3,3),Y(3,3),Z(3,3);
+		X = X.rotateX(gonioX);
+		Y = Y.rotateY(gonioY);
+		Z = Z.rotateZ(gonioZ);
+		gonioX = 0; gonioY = 0; gonioZ = 0;
+		R.identity() ; Rinv.identity();
+		U = Z * Y * X * U;
+		calcUB();
+	}
 }
 
-void Crystal::setGoniometerRotations(double a, double b, double c){
-	gonioX = a; gonioY = b; gonioZ = c; 
-	setGoniometer();
+void Crystal::rotateBy(double a, double b, double c){
+	if(freeRotate) {
+		Matrix X(3,3),Y(3,3),Z(3,3);
+		X = X.rotateX(a);
+		Y = Y.rotateY(b);
+		Z = Z.rotateZ(c);
+		U = Z * Y * X * U;
+		calcUB();
+	} else {
+		gonioX = gonioX + a; 
+		gonioY = gonioY + b; 
+		gonioZ = gonioZ + c; 
+		setGoniometer();
+	}
+}
+
+void Crystal::rotateTo(double a, double b, double c){
+	if(freeRotate){
+		Matrix X(3,3),Y(3,3),Z(3,3);
+		X = X.rotateX(a);
+		Y = Y.rotateY(b);
+		Z = Z.rotateZ(c);
+		U = Z * Y * X * U;
+		calcUB();
+	} else {
+		gonioX = a; 
+		gonioY = b; 
+		gonioZ = c; 
+		setGoniometer();
+	}
 }
 
 void Crystal::setGoniometer(void){
@@ -503,24 +554,9 @@ void Crystal::setGoniometer(void){
 	Rinv = R.transpose();
 }
 
-void Crystal::rotateUMatrix(double a, double b, double c){
-	gonioX = a; gonioY = b; gonioZ = c;
-	rotateUMatrix();
-}
 
-void Crystal::rotateUMatrix(void){		
-	Matrix X(3,3),Y(3,3),Z(3,3);
-	X = X.rotateX(gonioX);
-	Y = Y.rotateY(gonioY);
-	Z = Z.rotateZ(gonioZ);
-	
-	gonioX = 0; gonioY = 0; gonioZ = 0;
-	R.identity() ; Rinv.identity();
-	U = Z * Y * X * U;
-	calcUB();
-}	
 
-void Crystal::rotateUMatrixAbout(Matrix axis, double angle){
+void Crystal::rotateAboutBy(Matrix axis, double angle){
 	// First we need to make the Tphi matricies from
 	Matrix R(3,3), Tc(3,3);
 	

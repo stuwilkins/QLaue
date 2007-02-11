@@ -36,7 +36,7 @@
 #include "rotatewidget.h"
 #include "aboutbox.h"
 #include "crystaldialog.h"
-//#include "preferences.h"
+#include "preferences.h"
 #include "setubmat.h"
 #include "datafile.h"
 #include "reorientdialog.h"
@@ -206,12 +206,12 @@ void MainWindow::createConnections(void){
 	// Connections for the rotate dialog
 	
 	connect(rotate, SIGNAL(valueChanged(double,double,double)), this, SLOT(rotateCrystal(double,double,double)));
+	connect(rotate, SIGNAL(freeRotate(bool)), this, SLOT(setFreeRotate(bool)));
 	connect(rotate, SIGNAL(setGoniometerPos()), this, SLOT(setGoniometer()));
 			
 	// Allow lauewidget to rotate the crystal
 	
 	connect(film, SIGNAL(rotationsChanged(double, double, double)), this, SLOT(rotateCrystalBy(double,double,double)));
-	connect(film, SIGNAL(rotateTo(double,double,double)), this, SLOT(rotateCrystal(double,double,double)));
 	
 	// Connections for the indexing routines
 	
@@ -264,7 +264,6 @@ void MainWindow::setupCrystal(void){
 	crystal->setLattice(5.4,5.4,5.4,M_PI/2,M_PI/2,M_PI/2);
 	crystal->setSpaceGroup(0); // P_1
 	crystal->setU(1,0,0,0,0,1);
-	crystal->setGoniometerRotations(0,0,0);
 	crystal->delAllAtoms();
 	crystal->addAtom(29,0,0,0);	
 }
@@ -347,8 +346,15 @@ void MainWindow::setupActions(void){
 	ui.actionLaue_Reset_Zoom->setIcon(QIcon(":zoomout.png"));
 	ui.actionPreferences->setIcon(QIcon(":config.png"));
 	ui.actionView_Crystal_Parameters->setIcon(QIcon(":view.png"));
+	
+	// Laue Menu
+	
 	ui.actionDefine_Origin->setIcon(QIcon(":center.png"));
 	ui.actionMeasure_Scale->setIcon(QIcon(":ruler.png"));
+	ui.actionRotate_about_axis->setIcon(QIcon(":rotateabout.png"));
+	ui.actionSet_Laue_Orientation->setIcon(QIcon(":ub.png"));
+	ui.actionRe_orient->setIcon(QIcon(":gonio.png"));
+	ui.actionSolve_Orientation->setIcon(QIcon(":index.png"));
 	
 	// File menu
 	
@@ -456,10 +462,14 @@ void MainWindow::createToolBars(void){
 	laueToolBar = addToolBar(tr("Laue"));
 	laueToolBar->setMovable(false);
 	laueToolBar->setObjectName("LaueToolBar");
-	laueToolBar->addAction(ui.actionLaueZoom);
-	laueToolBar->addAction(ui.actionLaue_Reset_Zoom);
+	//laueToolBar->addAction(ui.actionLaueZoom);
+	//laueToolBar->addAction(ui.actionLaue_Reset_Zoom);
 	laueToolBar->addAction(ui.actionDefine_Origin);
 	laueToolBar->addAction(ui.actionMeasure_Scale);
+	laueToolBar->addAction(ui.actionRotate_about_axis);
+	laueToolBar->addAction(ui.actionSet_Laue_Orientation);
+	laueToolBar->addAction(ui.actionSolve_Orientation);
+	laueToolBar->addAction(ui.actionRe_orient);
 }
 
 void MainWindow::updateRecentFileActions() {
@@ -535,23 +545,15 @@ void MainWindow::displayCrystalDialog(void){
 }
 
 void MainWindow::displayPreferencesDialog(void){
-/*
+
 	PreferencesDialog dialog;
 	dialog.setLaue(film->getLaue());
-	dialog.setSingleCrystalDiff(mushroom->getDiff());
-	
-	if(film->isVisible())
-		dialog.setTabView(PreferencesDialog::LaueTab);
-	else
-		dialog.setTabView(PreferencesDialog::SingleCrystalTab);
-	
 	
 	if(dialog.exec() == QDialog::Accepted){
 		dialog.getLaue(film->getLaue());
-		dialog.getSingleCrystalDiff(mushroom->getDiff());
 		reCalcAll();
 	}
-*/
+
 }
 
 void MainWindow::displayUMatrixDialog(void){
@@ -661,10 +663,11 @@ void MainWindow::open(void){
 	
 	if(!maybeSave())
 		return;
+	
 	QString s = QFileDialog::getOpenFileName(this,
-											 "Choose a file to laod",
-											 "",
-											 "Crystals (*.xml)");
+											 tr("Choose a file to laod"),
+											 currentWorkingDir,
+											 tr("Crystals (*.xtl)"));
 	if(s == NULL)
 		return;
 	
@@ -673,15 +676,16 @@ void MainWindow::open(void){
 }
 
 void MainWindow::saveAsCrystal(void){
-	QString s = QFileDialog::getSaveFileName(this,
-											 "Choose a file to save under",
+	QString fileName = QFileDialog::getSaveFileName(this,
+											 tr("Choose a file to save under"),
 											 currentWorkingDir,
-											 "Crystals (*.xml)");
-	if(s == NULL)
-		return;
-	
-	setCurrentFile(s);
-	saveCrystal();
+											 tr("Crystals (*.xtl)"));
+	if(!fileName.isEmpty()) {
+		if(fileName.right(4) != ".xtl") 
+			fileName = fileName + ".xtl";
+		setCurrentFile(fileName);
+		saveCrystal();
+	}
 }
 
 void MainWindow::saveCrystal(void){
@@ -801,7 +805,7 @@ void MainWindow::reorient(void){
 	double angleX, angleY, angleZ;
 	int state;
 	
-	if(rotate->freeRotate()){
+	if(!crystal->getFreeRotate()){
 		QMessageBox::information(window(), tr(APP_NAME),
 			tr("You cannot re-orientate your sample when set to goniometer rotations. Please select \"free rotate\" and try again."));
 		return;
@@ -888,17 +892,8 @@ void MainWindow::setProgressBar(void){
 	statusBar()->showMessage(tr("Calculating ......"));
 }
 
-void MainWindow::setGoniometer(void){
-	// Set gonio to zero with current orientation
-	crystal->rotateUMatrix();
-}
-
 void MainWindow::rotateCrystalBy(double newX, double newY, double newZ){
-	if(rotate->freeRotate()){
-		crystal->rotateUMatrix(newX, newY, newZ);
-	} else {
-		crystal->setGoniometerRotationsBy(newX, newY, newZ);
-	}
+	crystal->rotateBy(newX, newY, newZ);
 	
 	// Send recalculations
 	rotate->updateRotations(crystal->getGonioX(), 
@@ -908,16 +903,26 @@ void MainWindow::rotateCrystalBy(double newX, double newY, double newZ){
 }
 
 void MainWindow::rotateCrystal(double newX, double newY, double newZ){
-	if(rotate->freeRotate()){
-		crystal->rotateUMatrix(newX, newY, newZ);
-	} else {
-		crystal->setGoniometerRotations(newX, newY, newZ);
-	}	
+	crystal->rotateTo(newX, newY, newZ);
 	
 	// Send recalculations
 	
 	rotate->updateRotations(newX, newY, newZ);
 	reCalcAll();
+}
+
+void MainWindow::setFreeRotate(bool fr){
+	crystal->setFreeRotate(fr);
+	qDebug("MainWindow::setFreeRotate() : freeRotate = %d",
+			crystal->getFreeRotate());
+}
+
+void MainWindow::setGoniometer(void){
+	if(!crystal->getFreeRotate()){
+		crystal->setFreeRotate(true);
+		crystal->setFreeRotate(false);
+		qDebug("MainWindow::setGoniometer() : set goniometer");
+	}
 }
 
 void MainWindow::reCalcAll(void){

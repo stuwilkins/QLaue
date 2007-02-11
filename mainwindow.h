@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -143,8 +143,9 @@ private slots:
 	void setProgressBar(void);
 	void rotateCrystal(double newX, double newY, double newZ);
 	void rotateCrystalBy(double newX, double newY, double newZ);
-	void reCalcAll(void);
+	void setFreeRotate(bool fr);
 	void setGoniometer(void);
+	void reCalcAll(void);
 	void displayIndexingResults(int nOrientations, LaueOrientations *orientations);
 	void displaySingleIndexingResult(int row, int col);
 	void displaySingleIndexingResult(void);

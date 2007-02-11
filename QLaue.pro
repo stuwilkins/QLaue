@@ -17,10 +17,10 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #	
-#	$Revision:$
-#	$Author:$
-#	$Date:$
-#	$HeadURL:$
+#	$Revision$
+#	$Author$
+#	$Date$
+#	$HeadURL$
 #
 
 
@@ -72,7 +72,8 @@ HEADERS += aboutbox.h \
            xray.h \
            xrayam.h \
            xraybe.h \
-           xrayel.h
+           xrayel.h \
+           preferences.h
 FORMS += aboutbox.ui \
          crystaldialog.ui \
          crystalwidget.ui \
@@ -84,7 +85,8 @@ FORMS += aboutbox.ui \
          mainwindow.ui \
          reorientdialog.ui \
          rotatewidget.ui \
-         setubmat.ui
+         setubmat.ui\
+         preferences.ui
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \
@@ -105,5 +107,6 @@ SOURCES += aboutbox.cpp \
            reorientdialog.cpp \
            rotatewidget.cpp \
            setubmat.cpp \
-           xray.cpp
+           xray.cpp \
+           preferences.cpp
 RESOURCES += resources.qrc

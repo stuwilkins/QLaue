@@ -85,6 +85,7 @@ private:
 	
 	// Angles for gonio
 	
+	bool freeRotate;
 	double gonioX;
 	double gonioY;
 	double gonioZ;
@@ -107,6 +108,8 @@ private:
 	bool sgInsertAtom(const Atom a, const Matrix pos);
 	void sgTransform(void);
 	Matrix getAtom4(int i);
+	
+	void setGoniometer(void);
 	
 	void calcUB(void);
 	void calcRlattice(void);
@@ -161,13 +164,14 @@ public:
 	void setU(Matrix Primary, Matrix Secondary);
 	void setU(Matrix Primary, Matrix Secondary, Matrix PrimaryHKL, Matrix SecondaryHKL);
 	
-	void setGoniometerRotations(double a, double b, double c);
-	void setGoniometerRotationsBy(double a, double b, double c);
-	void setGoniometer(void);
-	void rotateUMatrix(double a, double b, double c);
-	void rotateUMatrix(void);
-	void rotateUMatrixAbout(Matrix axis, double angle);
+	// Rotation Routines
 	
+	void rotateBy(double a, double b, double c);
+	void rotateTo(double a, double b, double c);
+	void rotateAboutBy(Matrix axis, double angle);
+	
+	void setFreeRotate(bool state);
+	bool getFreeRotate(void)		{ return freeRotate; }
 	double getGonioX(void)			{ return gonioX; }
 	double getGonioY(void)			{ return gonioY; }
 	double getGonioZ(void)			{ return gonioZ; }

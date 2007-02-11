@@ -85,9 +85,6 @@
     <addaction name="actionSet_Free_Rotate" />
     <addaction name="actionSet_Orientation" />
     <addaction name="actionView_Crystal_Parameters" />
-    <addaction name="separator" />
-    <addaction name="actionCalculate_Laue" />
-    <addaction name="actionCalculate_Single_Crystal" />
    </widget>
    <widget class="QMenu" name="menuHelp" >
     <property name="title" >
@@ -112,15 +109,15 @@
     <addaction name="separator" />
     <addaction name="actionLaueZoom" />
     <addaction name="actionLaue_Reset_Zoom" />
-    <addaction name="separator" />
+    <!-- <addaction name="separator" /> -->
     <addaction name="actionReset" />
     <addaction name="actionDefine_Origin" />
     <addaction name="actionMeasure_Scale" />
     <addaction name="separator" />
+    <addaction name="actionRotate_about_axis" />
+    <addaction name="separator" />
     <addaction name="actionSet_Laue_Orientation" />
     <addaction name="actionReset_Orientation" />
-    <addaction name="separator" />
-    <addaction name="actionRotate_about_axis" />
     <addaction name="separator" />
     <addaction name="actionSolve_Orientation" />
     <addaction name="actionResolve_Orientation" />
@@ -400,6 +397,9 @@
    <property name="shortcut" >
     <string>Ctrl++</string>
    </property>
+   <property name="visible" >
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionZoom_Out" >
    <property name="text" >
@@ -407,6 +407,9 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+-</string>
+   </property>
+   <property name="visible" >
+    <bool>false</bool>
    </property>
   </action>
   <action name="action100" >
@@ -517,6 +520,9 @@
    </property>
   </action>
   <action name="actionLaueZoom" >
+   <property name="visible" >
+    <bool>false</bool>
+   </property>
    <property name="enabled" >
     <bool>true</bool>
    </property>
@@ -525,6 +531,9 @@
    </property>
   </action>
   <action name="actionLaue_Reset_Zoom" >
+   <property name="visible" >
+    <bool>false</bool>
+   </property>
    <property name="enabled" >
     <bool>true</bool>
    </property>
@@ -598,16 +607,6 @@
    </property>
    <property name="text" >
     <string>Text Viewer</string>
-   </property>
-  </action>
-  <action name="actionCalculate_Laue" >
-   <property name="text" >
-    <string>Calculate Laue</string>
-   </property>
-  </action>
-  <action name="actionCalculate_Single_Crystal" >
-   <property name="text" >
-    <string>Calculate Single Crystal Diffraction</string>
    </property>
   </action>
   <action name="actionView_Diffraction_Results" >

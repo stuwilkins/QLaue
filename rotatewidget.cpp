@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -143,9 +143,9 @@ void RotateWidget::setFreeRotate(bool newState){
 		ui.zaxis->setEnabled(true);
 		ui.yaxis->setEnabled(true);
 		ui.xaxis->setEnabled(true);
-		ui.xaxis->setText("0.0");
-		ui.yaxis->setText("0.0");
-		ui.zaxis->setText("0.0");
+		ui.xaxis->setText("0.00");
+		ui.yaxis->setText("0.00");
+		ui.zaxis->setText("0.00");
 	}
 	
 	emit freeRotate(newState);

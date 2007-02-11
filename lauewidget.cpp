@@ -116,7 +116,7 @@ void LaueIndexingThread::run() {
 		
 		double theta = cos(primary.dot(secondary) / (primary.mag() * secondary.mag()));
 		
-		newOrient.rotateUMatrix();
+		newOrient.setFreeRotate(true);
 		
 		setCalcIntensities(false);
 		
@@ -913,7 +913,9 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 			numOrientationSpots++;
 			update();
 		}
-	
+		
+		event->accept();
+		return;
 	}
 	
 	if(getBit(userAction, LaueFilm::UASelectUBOrientation)) {
@@ -930,9 +932,10 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 			displayMessage(QString(""));
 			update();
 			resetOrientation();
-			event->accept();
-			return;
 		}
+		
+		event->accept();
+		return;
 	}
 
 	if(getBit(userAction,LaueFilm::UAMeasureZoom) && (userActionStage == 1)){
@@ -1134,7 +1137,7 @@ void LaueFilm::mouseMoveEvent(QMouseEvent *event){
 				angle = -1.0 * angle;
 			
 			Matrix pri = laue->filmposToVector(rotateAboutAxisPoint.x(),rotateAboutAxisPoint.y());
-			crystal->rotateUMatrixAbout(pri, angle);
+			crystal->rotateAboutBy(pri, angle);
 			moveStart = event->pos();
 			emit rotationsChanged(0.0 ,0.0 , 0.0);
 			update();
@@ -1289,6 +1292,15 @@ QPointF LaueFilm::pixelsToWorld(QPoint pixel, QRect rect){
 }
 
 void LaueFilm::rotateAboutAxis(void) {
+	// This only works in free rotate 
+	// so check, and if not warn with a message box.
+	
+	if(!crystal->getFreeRotate()) {
+		QMessageBox::information(this, tr(APP_NAME),
+			tr("You cannot rotate about an axis when set to goniometer rotations. Please select \"free rotate\" and try again."));
+		return;
+	}
+
 	setBit(&userAction, UARotateAboutAxis, true);
 	userActionStage = 1;
 	displayMessage(QString("Click on point to rotate about."));
@@ -1466,9 +1478,10 @@ void LaueFilm::resetOrientation(void) {
 		Matrix pri = laue->filmposToVector(UBOrientationSpotsX[0],UBOrientationSpotsY[0]);
 		Matrix sec = laue->filmposToVector(UBOrientationSpotsX[1],UBOrientationSpotsY[1]);
 		
-		this->getCrystal()->setU(pri,sec,dialog.getPrimary(), dialog.getSecondary());
-		this->reCalc();
-		
+		getCrystal()->setU(pri,sec,dialog.getPrimary(), dialog.getSecondary());
+		reCalc();
+	} else {
+		setBit(&display, DisplayUBIndexing, false);
 	}
 	
 	setBit(&display, LaueFilm::DisplayLaue, true);

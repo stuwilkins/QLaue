@@ -17,10 +17,10 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
@@ -602,7 +602,7 @@ int lauegram::indexLaue(Crystal *crystal, int numIndexSpots, double indexSpots[1
 	int maxH = indexingMaxH; int maxK = indexingMaxK ; int maxL = indexingMaxL;
 
 	Crystal newOrient = *crystal;
-	newOrient.rotateUMatrix();
+	newOrient.setFreeRotate(true);
 	
 	int oldCalcIntensities = calcIntensities();
 	setCalcIntensities(false);

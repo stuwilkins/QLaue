@@ -287,7 +287,6 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 signals:
 	void rotationsChanged(double xx, double yy, double zz);
-	void rotateTo(double,double,double);
 	void recalculated(void);
 	void gotFocus(void);
 	void newIndexingAvaliable(int nOrientations, LaueOrientations *orientations);
