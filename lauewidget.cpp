@@ -587,15 +587,18 @@ void LaueFilm::paintRotateAboutCross(QPainter *painter, QRect size){
 	int spot_size = (int)(max_spot_size * ((double)size.height() / 2000));
 	
 	painter->setBrush(Qt::NoBrush);
-	painter->setPen(QColor("darkMagenta"));
+	painter->setPen(QColor("darkGreen"));
 	
-	QRect spot(0,0,spot_size,spot_size);
+	QRect crossRect(0,0,spot_size,spot_size);
+	QRect circleRect(0,0,spot_size / 2,spot_size / 2);
+
+	crossRect.moveCenter(cross);
+	circleRect.moveCenter(cross);
 		
-	spot.moveCenter(cross);
-		
-	if(size.contains(spot,true)) {
-		painter->drawLine(spot.topLeft(), spot.bottomRight());
-		painter->drawLine(spot.topRight(), spot.bottomLeft());
+	if(size.contains(crossRect,true)) {
+		painter->drawLine(crossRect.topLeft(), crossRect.bottomRight());
+		painter->drawLine(crossRect.topRight(), crossRect.bottomLeft());
+		painter->drawEllipse(circleRect);
 	}
 }
 
