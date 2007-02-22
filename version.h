@@ -40,6 +40,10 @@
 	#define APP_VERSION_URL		"http://www.stuwilkins.com:81/QCrystal.win32"
 #endif
 
+#ifdef Q_WS_X11
+	#define APP_VERSION_URL		"http://www.stuwilkins.com:81/QCrystal.x11"
+#endif
+
 #define APP_URL_TO_LOAD			"http://www.stuwilkins.com:81/downloads/QCrystal"
 
 // Now the SVN Headers 

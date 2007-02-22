@@ -108,15 +108,18 @@ MainWindow::MainWindow() : QMainWindow() {
 
 void MainWindow::initializeAssistant() {
 	
+  QString assistantDir;
+  QString resourcesDir;
+
 #ifdef Q_OS_MACX
 	CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
 	CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, 
 												  kCFURLPOSIXPathStyle);
 	char buffer[1000];
 	CFStringGetCString(macPath, buffer, 1000, CFStringGetSystemEncoding());
-	QString assistantDir(buffer);
+	assistantDir = QString(buffer);
 	assistantDir = assistantDir + QString("/Contents/MacOS");
-	QString resourcesDir(buffer);
+	resourcesDir = QString(buffer);
 	resourcesDir = resourcesDir + QString("/Resources");
 	CFRelease(pluginRef);
 	CFRelease(macPath);

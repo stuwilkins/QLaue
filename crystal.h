@@ -178,7 +178,7 @@ public:
 	
 	// Atom operations
 	
-	void Crystal::addAtom(int zn, double x, double y, double z);
+	void addAtom(int zn, double x, double y, double z);
 	complex<double> calcXSFactor(double h, double k, double l, double sinthoverlambda, 
 								 double lambda);
 	complex<double> calcXSFactor(int h, int k, int l, double sinthoverlambda,
