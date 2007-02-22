@@ -18,6 +18,7 @@
 	<file alias="ub.png">images/ub.png</file>
 	<file alias="gonio.png">images/gonio.png</file>
 	<file alias="index.png">images/index.png</file>
+	<file alias="lattice.png">images/lattice.png</file>
 	<file alias="info.html">info.html</file>
 </qresource>
 </RCC>

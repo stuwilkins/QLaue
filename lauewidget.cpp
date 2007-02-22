@@ -411,7 +411,6 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	
 	userAction = LaueFilm::UANone;
 	
-	imageInvert = false;
 	laueMessage = QString("");
 	
 	setMouseTracking(true);
@@ -671,6 +670,7 @@ void LaueFilm::paintLaueAxes(QPainter *painter, QRect laue){
 	painter->drawLine(0,0,0,-1 * pad / 2);
 	
 	double world_length = (double)length * 2 / (pixels_per_mm * laue.height()); 
+	//painter->drawRect(-2 * length,0,0,-1 * pad);
 	painter->drawLine(-2 * length,0,0,0);
 	painter->drawLine(-2 * length,0,-2 * length,-1 * pad / 2);
 	painter->drawText(-2 * length + 5,0,length*2 - 10,-1 * pad / 2,Qt::AlignCenter,
@@ -708,7 +708,7 @@ void LaueFilm::paintImage(QPainter *painter, QRect size)
 	
 	QImage image = *importedScaledImage;
 	
-	if(imageInvert)
+	if(getBit(display, DisplayImageInverted))
 		image.invertPixels();
 	
 	painter->setClipRect(size,Qt::ReplaceClip);

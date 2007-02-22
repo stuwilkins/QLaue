@@ -127,7 +127,6 @@ private:
 	
 	// Bitmap laue image variables
 	
-	bool imageInvert;
 	double pixels_per_mm;
 	
 	// Laue parameters

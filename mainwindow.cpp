@@ -349,6 +349,7 @@ void MainWindow::setupActions(void){
 	ui.actionLaue_Reset_Zoom->setIcon(QIcon(":zoomout.png"));
 	ui.actionPreferences->setIcon(QIcon(":config.png"));
 	ui.actionView_Crystal_Parameters->setIcon(QIcon(":view.png"));
+	ui.actionLattice->setIcon(QIcon(":lattice.png"));
 	
 	// Laue Menu
 	
@@ -460,6 +461,7 @@ void MainWindow::createToolBars(void){
 	crystalToolBar = addToolBar(tr("Crystal"));
 	crystalToolBar->setMovable(false);
 	crystalToolBar->setObjectName("CrystalToolBar");
+	crystalToolBar->addAction(ui.actionLattice);
 	crystalToolBar->addAction(ui.actionView_Crystal_Parameters);
 	
 	laueToolBar = addToolBar(tr("Laue"));
