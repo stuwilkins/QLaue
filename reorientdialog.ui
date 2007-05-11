@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>ReorientDialog</class>
  <widget class="QDialog" name="ReorientDialog" >
   <property name="geometry" >
@@ -61,48 +58,6 @@
     </property>
     <property name="columnCount" >
      <number>0</number>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_3" >
-   <property name="geometry" >
-    <rect>
-     <x>330</x>
-     <y>140</y>
-     <width>281</width>
-     <height>201</height>
-    </rect>
-   </property>
-   <property name="title" >
-    <string>Reorientation Type</string>
-   </property>
-   <widget class="QRadioButton" name="ZoneButton" >
-    <property name="geometry" >
-     <rect>
-      <x>20</x>
-      <y>70</y>
-      <width>121</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Zone</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="XAxisButton" >
-    <property name="geometry" >
-     <rect>
-      <x>20</x>
-      <y>40</y>
-      <width>121</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>X-Axis Only</string>
-    </property>
-    <property name="checked" >
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -338,8 +293,62 @@
     <string>OK</string>
    </property>
   </widget>
+  <widget class="QGroupBox" name="groupBox_3" >
+   <property name="geometry" >
+    <rect>
+     <x>330</x>
+     <y>140</y>
+     <width>281</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Reorientation Type</string>
+   </property>
+   <widget class="QRadioButton" name="XAxisButton" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>X-Axis Only</string>
+    </property>
+    <property name="checked" >
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="ZoneButton" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Zone</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4" >
+   <property name="geometry" >
+    <rect>
+     <x>330</x>
+     <y>240</y>
+     <width>281</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>GroupBox</string>
+   </property>
+  </widget>
  </widget>
- <pixmapfunction></pixmapfunction>
  <tabstops>
   <tabstop>XHLineEdit</tabstop>
   <tabstop>XKLineEdit</tabstop>

@@ -111,8 +111,7 @@ private:
 	
 	LaueOrientations *orientations;
 	int numOrientations;
-	
-	
+
 	// Variables to control the user action
 	
 	int display;
