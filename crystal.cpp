@@ -22,6 +22,7 @@
 	$Date$
 	$HeadURL$
 
+	Version 1.0
 */
 
 //#include <math.h>
