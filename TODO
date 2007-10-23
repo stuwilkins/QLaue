@@ -1,0 +1,6 @@
+$Revision:$
+
+** Fix connections for image and also to focus all
+** Switch dock widget controls from laue to single crystal when swaping?
+** Improve superlattice dialog (check bugs in lattice input)
+** Shell-X input files
