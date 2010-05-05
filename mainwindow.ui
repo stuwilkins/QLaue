@@ -113,6 +113,7 @@
     <addaction name="actionReset"/>
     <addaction name="actionDefine_Origin"/>
     <addaction name="actionMeasure_Scale"/>
+    <addaction name="actionImage_Scale"/>
     <addaction name="separator"/>
     <addaction name="actionRotate_about_axis"/>
     <addaction name="separator"/>
@@ -123,7 +124,6 @@
     <addaction name="actionResolve_Orientation"/>
     <addaction name="separator"/>
     <addaction name="actionRe_orient"/>
-    <addaction name="actionImage_Scale"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuCrystal"/>
