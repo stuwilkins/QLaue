@@ -718,8 +718,16 @@ void LaueFilm::paintImage(QPainter *painter, QRect size)
 		newimage.invertPixels();
 
 	int xpad = (size.width() - newimage.width()) / 2;
-	QRect paintsize = QRect(size.translated(xpad,0).topLeft(),
-							size.translated(-1 * xpad, 0).bottomRight());
+	int ypad = (size.height() - newimage.height()) / 2;
+	
+	QRect paintsize;
+	if(ypad == 0){
+		paintsize = QRect(size.translated(xpad,0).topLeft(),
+										size.translated(-1 * xpad, 0).bottomRight());
+	} else {	
+		paintsize = QRect(size.translated(0, ypad).topLeft(), 
+										size.translated(0, -1 * ypad).bottomRight());
+	}
 	
 	importedImagePos = paintsize.topLeft();
 	painter->drawImage(importedImagePos, newimage);
@@ -1332,18 +1340,21 @@ void LaueFilm::measureScale(void) {
 
 void LaueFilm::setImageScale(void) {
 	bool ok;
-	double pixelSize = QInputDialog::getDouble(this, tr("QLaue"),
-										 tr("Pixel size (microns)"), 86.0, 0, 20000, 2, &ok);
+	
+	double pixelSize = 1000 * importedScaledImage->width();
+	pixelSize = pixelSize / (importedImage->width() * pixels_per_mm * laueRect.height());
+	
+	
+	pixelSize = QInputDialog::getDouble(this, tr("QLaue"),
+											tr("Pixel size (microns)"), pixelSize, 0, 20000, 2, &ok);
 	if(ok){
-		
 		// Origional Image length in mm
 		pixels_per_mm = importedImage->width() *  (pixelSize / 1000.0);
-		qDebug() << tr("LaueFilm::setImageScale() : Image width = %1 mm").arg(pixels_per_mm);
+		qDebug() << QString("LaueFilm::setImageScale() : Image width = %1 mm").arg(pixels_per_mm);
 		// Actual width of scaled image
 		pixels_per_mm = importedScaledImage->width() / pixels_per_mm;
 		pixels_per_mm = pixels_per_mm / laueRect.height();
-		
-		qDebug("Set image scale");
+		qDebug() << QString("LaueFilm::setImageScale() : pixels_per_mm = %1").arg(pixels_per_mm);
 	}	
 }
 
