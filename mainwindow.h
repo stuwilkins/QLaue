@@ -30,7 +30,6 @@
 #include <QtCore>
 #include <QtGui>
 //#include <QAssistantClient>
-
 #include "ui_mainwindow.h"
 #include "lauewidget.h"
 #include "rotatewidget.h"
@@ -38,7 +37,7 @@
 #include "lauecontrols.h"
 #include "crystal.h"
 #include "crystalwidget.h"
-#include "httpcheck.h"
+/*#include "httpcheck.h"*/
 
 class MainWindowWidget : public QWidget {
 	Q_OBJECT
@@ -87,9 +86,8 @@ class MainWindow : public QMainWindow
 	QString currentWorkingDir;
 	QPrinter *printer;
 	
-	HttpCheck *httpcheck;
-	
-	//QAssistantClient *assistantClient;
+	/*HttpCheck *httpcheck;*/
+	/*QAssistantClient *assistantClient;*/
 	
 	double currentZoom;
 	

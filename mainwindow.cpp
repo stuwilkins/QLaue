@@ -93,8 +93,8 @@ MainWindow::MainWindow() : QMainWindow() {
 	updateRecentFileActions();		// Setup recent crystals
 	
 	newCrystal();					// Initializes the crystal
-	httpcheck = new HttpCheck(this);
-	httpcheck->checkVersion();
+	/*httpcheck = new HttpCheck(this);
+	httpcheck->checkVersion();*/
 	
 	recalculated();
 	readSettings();
@@ -107,7 +107,7 @@ MainWindow::MainWindow() : QMainWindow() {
 }
 
 void MainWindow::initializeAssistant() {
-  /*	
+/*
   QString assistantDir;
   QString resourcesDir;
 
@@ -141,11 +141,11 @@ void MainWindow::initializeAssistant() {
 }
 
 void MainWindow::displayHelp() {
-  /*
-    QString page("doc/index.html");
-    qDebug("MainWindow::displayHelp() : page = %s", qPrintable(page));
-    assistantClient->showPage(page);
-  */
+/*
+	QString page("doc/index.html");
+	qDebug("MainWindow::displayHelp() : page = %s", qPrintable(page));
+	assistantClient->showPage(page);
+*/
 }
 
 void MainWindow::displayHelpError(QString message) {
@@ -388,6 +388,7 @@ void MainWindow::setupActions(void){
 	connect(ui.actionImport_Image, SIGNAL(triggered()), this, SLOT(importImage()));
 	connect(ui.actionDefine_Origin, SIGNAL(triggered()), film, SLOT(setOrigin()));
 	connect(ui.actionMeasure_Scale, SIGNAL(triggered()), film, SLOT(measureScale()));
+	connect(ui.actionImage_Scale, SIGNAL(triggered()), film, SLOT(setImageScale()));
 	connect(ui.actionReset, SIGNAL(triggered()), film, SLOT(resetView()));
 	connect(ui.actionShow_Image, SIGNAL(toggled(bool)), film, SLOT(setDisplayImage(bool)));
 	connect(ui.actionInvert_Image, SIGNAL(toggled(bool)), film, SLOT(setInvertImage(bool)));
@@ -715,16 +716,16 @@ void MainWindow::saveCrystal(void){
 
 void MainWindow::importImage(void){
 	QString s = QFileDialog::getOpenFileName(this,
-											 "Choose a filename to save under",
+											 "Choose Image",
 											 currentWorkingDir,
-											 "Images (*.png *.xpm *.jpg)");
+											 "Images (*.png *.xpm *.jpg *.tif *.tiff)");
 	if(s == NULL){
 		setDisplayImageControls(false);
 		film->setDisplayImage(false);
 		return;
 	}
 	
-	QPixmap pixmap;
+	QImage pixmap;
 	
 	if(pixmap.load(s) != TRUE){
 		// Could not import image 
@@ -739,14 +740,14 @@ void MainWindow::importImage(void){
 		return;
 	}
 	
-	*(film->importedImage) = pixmap.toImage();
-	*(film->importedScaledImage) = pixmap.toImage();
-	film->setPixelsPerMMFromImage();
+	*(film->importedImage) = pixmap;
+	*(film->importedScaledImage) = pixmap;
+	//film->setPixelsPerMMFromImage();
 	film->setDisplayImage(true);
 	setDisplayImageControls(true);
 	
-	statusBar()->showMessage(QString("Imported %1.")
-							 .arg(strippedName(s)),5000);
+	statusBar()->showMessage(QString("Imported %1 (%2 x %3 pixels).")
+							 .arg(strippedName(s)).arg(pixmap.width()).arg(pixmap.height()),5000);
 }
 
 void MainWindow::printAction(void){

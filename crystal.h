@@ -33,9 +33,9 @@
 typedef struct spacegroup {
 	int index;
 	int number;
-	char *Name;
-	char *Extn;
-	char *HallName;
+	const char *Name;
+	const char *Extn;
+	const char *HallName;
 	char LatticeType;
 	int XtalSystem;
 	int Centric;

@@ -393,7 +393,7 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	laueOrigin = QPoint(0,0);
 	origin_circle = 0.5;
 
-	pixels_per_mm = 0.005;
+	pixels_per_mm = 12.0482; // This is an 86 micron pixel size for PSL 
 	rubberBand = 0;
 	
 	max_spot_size = 50;
@@ -707,17 +707,20 @@ void LaueFilm::paintImage(QPainter *painter, QRect size)
 	
 	// Get the image
 	
-	QImage image = *importedScaledImage;
-	
-	if(getBit(display, DisplayImageInverted))
-		image.invertPixels();
+	QImage image = *importedImage;
 	
 	painter->setClipRect(size,Qt::ReplaceClip);
 	
-	QImage newimage = image.scaledToHeight(size.height(),Qt::SmoothTransformation);
+	QImage newimage = importedImage->scaled(size.size(), Qt::KeepAspectRatio);
+	*importedScaledImage = newimage;
+	
+	if(getBit(display, DisplayImageInverted))
+		newimage.invertPixels();
+
 	int xpad = (size.width() - newimage.width()) / 2;
 	QRect paintsize = QRect(size.translated(xpad,0).topLeft(),
 							size.translated(-1 * xpad, 0).bottomRight());
+	
 	importedImagePos = paintsize.topLeft();
 	painter->drawImage(importedImagePos, newimage);
 	
@@ -1325,6 +1328,23 @@ void LaueFilm::measureScale(void) {
 	setBit(&display, LaueFilm::DisplayLaue, false);
 	setBit(&display, LaueFilm::DisplayOrigin, false);
 	update();
+}
+
+void LaueFilm::setImageScale(void) {
+	bool ok;
+	double pixelSize = QInputDialog::getDouble(this, tr("QLaue"),
+										 tr("Pixel size (microns)"), 86.0, 0, 20000, 2, &ok);
+	if(ok){
+		
+		// Origional Image length in mm
+		pixels_per_mm = importedImage->width() *  (pixelSize / 1000.0);
+		qDebug() << tr("LaueFilm::setImageScale() : Image width = %1 mm").arg(pixels_per_mm);
+		// Actual width of scaled image
+		pixels_per_mm = importedScaledImage->width() / pixels_per_mm;
+		pixels_per_mm = pixels_per_mm / laueRect.height();
+		
+		qDebug("Set image scale");
+	}	
 }
 
 void LaueFilm::measureZoom(void) {

@@ -26,7 +26,7 @@
 
 TEMPLATE = app
 TARGET = 
-CONFIG += x86 ppc
+CONFIG += x86_64 
 
 QT += xml network
 
@@ -55,7 +55,7 @@ HEADERS += aboutbox.h \
            filmsizedialog.h \
            htmlgenerators.h \
            htmlviewdialog.h \
-           httpcheck.h \
+#           httpcheck.h \
            indexingdialog.h \
            laue.h \
            lauecontrols.h \
@@ -79,7 +79,7 @@ FORMS += aboutbox.ui \
          crystalwidget.ui \
          filmsizedialog.ui \
          htmlviewdialog.ui \
-         httpcheck.ui \
+#         httpcheck.ui \
          indexingdialog.ui \
          lauecontrols.ui \
          mainwindow.ui \
@@ -96,7 +96,7 @@ SOURCES += aboutbox.cpp \
            filmsizedialog.cpp \
            htmlgenerators.cpp \
            htmlviewdialog.cpp \
-           httpcheck.cpp \
+#           httpcheck.cpp \
            indexingdialog.cpp \
            laue.cpp \
            lauecontrols.cpp \

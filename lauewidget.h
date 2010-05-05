@@ -241,6 +241,7 @@ public slots:
 	void print(QPrinter *printer, QPainter *painter, int mode);
 	void setOrigin(void);
 	void measureScale(void);
+	void setImageScale(void);
 	void measureZoom(void);
 	void rotateAboutAxis(void);
 	void resetZoom(void);
