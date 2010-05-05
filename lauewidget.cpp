@@ -393,7 +393,7 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	laueOrigin = QPoint(0,0);
 	origin_circle = 0.5;
 
-	pixels_per_mm = 12.0482; // This is an 86 micron pixel size for PSL 
+	pixels_per_mm = 0.006; // This is approximately 172 micron pixel size for PSL (2 x 2 binning)
 	rubberBand = 0;
 	
 	max_spot_size = 50;
@@ -1387,7 +1387,7 @@ void LaueFilm::clearMessage(void){
 
 void LaueFilm::resetView(void){
 	laueOrigin = QPointF(0,0);
-	pixels_per_mm = 5;
+	pixels_per_mm = 0.006;
 	update();
 }
 
