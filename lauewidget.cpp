@@ -26,6 +26,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <algorithm>
 
 #include "matrix.h"
 #include "version.h"

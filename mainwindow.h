@@ -29,7 +29,7 @@
 
 #include <QtCore>
 #include <QtGui>
-#include <QAssistantClient>
+//#include <QAssistantClient>
 
 #include "ui_mainwindow.h"
 #include "lauewidget.h"
@@ -89,7 +89,7 @@ class MainWindow : public QMainWindow
 	
 	HttpCheck *httpcheck;
 	
-	QAssistantClient *assistantClient;
+	//QAssistantClient *assistantClient;
 	
 	double currentZoom;
 	

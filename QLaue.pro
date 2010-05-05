@@ -26,7 +26,7 @@
 
 TEMPLATE = app
 TARGET = 
-CONFIG += x86 ppc assistant
+CONFIG += x86 ppc
 
 QT += xml network
 

@@ -103,11 +103,11 @@ MainWindow::MainWindow() : QMainWindow() {
 	
 	// Initialize help viewer (QT Assistant)
 	
-	initializeAssistant();
+	// initializeAssistant();
 }
 
 void MainWindow::initializeAssistant() {
-	
+  /*	
   QString assistantDir;
   QString resourcesDir;
 
@@ -137,13 +137,15 @@ void MainWindow::initializeAssistant() {
 	assistantClient->setArguments(arguments);
 	
 	connect(assistantClient, SIGNAL(error(QString)), this, SLOT(displayHelpError(QString)));
+  */
 }
 
 void MainWindow::displayHelp() {
-
-	QString page("doc/index.html");
-	qDebug("MainWindow::displayHelp() : page = %s", qPrintable(page));
-	assistantClient->showPage(page);
+  /*
+    QString page("doc/index.html");
+    qDebug("MainWindow::displayHelp() : page = %s", qPrintable(page));
+    assistantClient->showPage(page);
+  */
 }
 
 void MainWindow::displayHelpError(QString message) {

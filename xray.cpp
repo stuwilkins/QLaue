@@ -17,15 +17,16 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
-	$Revision:$
-	$Author:$
-	$Date:$
-	$HeadURL:$
+	$Revision$
+	$Author$
+	$Date$
+	$HeadURL$
 
 */
 
 #include <complex>
 #include <iostream>
+#include <string.h>
 using std::complex;
 using namespace std;
 #include "xray.h"
