@@ -29,7 +29,7 @@
 
 #define APP_NAME				"QLaue"
 #define APP_COPYLEFT			"(c) Stuart Brian Wilkins 2007"
-#define APP_CURRENT_VERSION		0.1
+#define APP_CURRENT_VERSION		0.2
 
 
 #ifdef Q_WS_MAC
