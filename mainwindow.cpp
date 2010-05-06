@@ -211,7 +211,6 @@ void MainWindow::createConnections(void){
 	// Connections for the rotate dialog
 	
 	connect(rotate, SIGNAL(valueChanged(double,double,double)), this, SLOT(rotateCrystal(double,double,double)));
-	connect(rotate, SIGNAL(freeRotate(bool)), this, SLOT(setFreeRotate(bool)));
 	connect(rotate, SIGNAL(setGoniometerPos()), this, SLOT(setGoniometer()));
 			
 	// Allow lauewidget to rotate the crystal
@@ -271,6 +270,7 @@ void MainWindow::setupCrystal(void){
 	crystal->setU(1,0,0,0,0,1);
 	crystal->delAllAtoms();
 	crystal->addAtom(29,0,0,0);	
+	crystal->setFreeRotate(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
@@ -380,7 +380,7 @@ void MainWindow::setupActions(void){
 	
 	connect(ui.actionSet_Orientation, SIGNAL(triggered()), this, SLOT(displayUMatrixDialog()));
 	connect(ui.actionLattice, SIGNAL(triggered()), this, SLOT(displayCrystalDialog()));
-	connect(ui.actionSet_Free_Rotate, SIGNAL(toggled(bool)), rotate, SLOT(setFreeRotate(bool)));
+	//connect(ui.actionSet_Free_Rotate, SIGNAL(toggled(bool)), rotate, SLOT(setFreeRotate(bool)));
 	connect(ui.actionView_Crystal_Parameters, SIGNAL(triggered()), this, SLOT(displayCrystalParametersDialog()));
 
 	// Laue menu
@@ -436,10 +436,6 @@ void MainWindow::setupActions(void){
 	}
 
 	// Set the defaults
-	
-	// Set the system to free rotate
-	
-	ui.actionSet_Free_Rotate->setChecked(true);
 	
 	// For macos systems remove the separator before Quit in the file menu.
 	
@@ -569,7 +565,6 @@ void MainWindow::displayUMatrixDialog(void){
 	if(dialog.exec() == QDialog::Accepted){
 		crystal->setU(dialog.getPrimary(), dialog.getSecondary());
 		reCalcAll();
-		rotate->updateRotations(0.0,0.0,0.0);
 	}
 }
 
@@ -828,7 +823,6 @@ void MainWindow::reorient(void){
 		if(dialog.getSelectedOrientation()){
 			dialog.getAngles(&angleX, &angleY, &angleZ);
 			rotateCrystal(angleX, angleY, angleZ);
-			rotate->updateRotations(angleX, angleY, angleZ);
 		}
 	} else if(state == ReorientDialog::PrintClicked) {
 		print(LaueFilm::PrintReorientation);
@@ -902,35 +896,12 @@ void MainWindow::setProgressBar(void){
 
 void MainWindow::rotateCrystalBy(double newX, double newY, double newZ){
 	crystal->rotateBy(newX, newY, newZ);
-	
-	// Send recalculations
-	rotate->updateRotations(crystal->getGonioX(), 
-							crystal->getGonioY(), 
-							crystal->getGonioZ());
 	reCalcAll();
 }
 
 void MainWindow::rotateCrystal(double newX, double newY, double newZ){
 	crystal->rotateTo(newX, newY, newZ);
-	
-	// Send recalculations
-	
-	rotate->updateRotations(newX, newY, newZ);
 	reCalcAll();
-}
-
-void MainWindow::setFreeRotate(bool fr){
-	crystal->setFreeRotate(fr);
-	qDebug("MainWindow::setFreeRotate() : freeRotate = %d",
-			crystal->getFreeRotate());
-}
-
-void MainWindow::setGoniometer(void){
-	if(!crystal->getFreeRotate()){
-		crystal->setFreeRotate(true);
-		crystal->setFreeRotate(false);
-		qDebug("MainWindow::setGoniometer() : set goniometer");
-	}
 }
 
 void MainWindow::reCalcAll(void){

@@ -73,7 +73,8 @@ HEADERS += aboutbox.h \
            xrayam.h \
            xraybe.h \
            xrayel.h \
-           preferences.h
+           preferences.h \
+	   adjustimage.h
 FORMS += aboutbox.ui \
          crystaldialog.ui \
          crystalwidget.ui \
@@ -86,7 +87,7 @@ FORMS += aboutbox.ui \
          reorientdialog.ui \
          rotatewidget.ui \
          setubmat.ui\
-         preferences.ui
+         preferences.ui 
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \
@@ -108,5 +109,6 @@ SOURCES += aboutbox.cpp \
            rotatewidget.cpp \
            setubmat.cpp \
            xray.cpp \
-           preferences.cpp
+           preferences.cpp \
+	   adjustimage.cpp 
 RESOURCES += resources.qrc

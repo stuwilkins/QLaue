@@ -83,7 +83,6 @@
     </property>
     <addaction name="actionLattice"/>
     <addaction name="separator"/>
-    <addaction name="actionSet_Free_Rotate"/>
     <addaction name="actionSet_Orientation"/>
     <addaction name="actionView_Crystal_Parameters"/>
    </widget>

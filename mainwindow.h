@@ -141,8 +141,6 @@ private slots:
 	void setProgressBar(void);
 	void rotateCrystal(double newX, double newY, double newZ);
 	void rotateCrystalBy(double newX, double newY, double newZ);
-	void setFreeRotate(bool fr);
-	void setGoniometer(void);
 	void reCalcAll(void);
 	void displayIndexingResults(int nOrientations, LaueOrientations *orientations);
 	void displaySingleIndexingResult(int row, int col);

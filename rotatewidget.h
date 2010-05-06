@@ -35,10 +35,6 @@ class RotateWidget : public QWidget
 	
 public:
 	RotateWidget(QWidget *parent = 0);
-public slots:
-	void updateRotations(double x, double y, double z);
-	void setFreeRotate(bool newState);
-	bool freeRotate(void);
 private slots:
 	void xLeftClicked();
 	void xRightClicked();
@@ -46,16 +42,11 @@ private slots:
 	void yRightClicked();
 	void zLeftClicked();
 	void zRightClicked();
-	void sendNewXYZ(void);
-	void setGoniometer(void);
 private:
 	Ui::RotateWidget ui;
-	bool free_rotate;
 signals:
 	void valueChanged(double newX, double newY, double newZ);	
 	void valueChanged(void);
-	void freeRotate(bool);
-	void setGoniometerPos(void);
 };
 
 #endif
