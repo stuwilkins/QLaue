@@ -92,7 +92,6 @@
      <string>Help</string>
     </property>
     <addaction name="action_About"/>
-    <addaction name="action_Help"/>
    </widget>
    <widget class="QMenu" name="menu_Laue">
     <property name="enabled">
@@ -105,6 +104,8 @@
     <addaction name="separator"/>
     <addaction name="actionShow_Image"/>
     <addaction name="actionInvert_Image"/>
+    <addaction name="actionRotate_Image"/>
+    <addaction name="separator"/>
     <addaction name="actionShow_Labels"/>
     <addaction name="actionReset_Labels"/>
     <addaction name="separator"/>
@@ -681,6 +682,14 @@
   <action name="actionImage_Scale">
    <property name="text">
     <string>Set Image Scale</string>
+   </property>
+  </action>
+  <action name="actionRotate_Image">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate Image</string>
    </property>
   </action>
  </widget>
