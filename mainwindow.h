@@ -29,7 +29,7 @@
 
 #include <QtCore>
 #include <QtGui>
-//#include <QAssistantClient>
+
 #include "ui_mainwindow.h"
 #include "lauewidget.h"
 #include "rotatewidget.h"
@@ -37,7 +37,7 @@
 #include "lauecontrols.h"
 #include "crystal.h"
 #include "crystalwidget.h"
-/*#include "httpcheck.h"*/
+#include "imagecontrols.h"
 
 class MainWindowWidget : public QWidget {
 	Q_OBJECT
@@ -61,6 +61,7 @@ class MainWindow : public QMainWindow
 	LaueControls		*lauecontrols;
 	CrystalWidget		*crystalWidget;
 	MainWindowWidget	*mainWidget;
+	ImageControlWidget  *imagecontrols;
 	QProgressBar		*progressBar;
 	QTableWidget		*indexingWidget;
 	QTextEdit			*textViewDockWidget;
@@ -73,6 +74,7 @@ class MainWindow : public QMainWindow
 	QDockWidget *rotateWidgetDock;
 	QDockWidget *crystalDock;
 	QDockWidget *indexingDock;
+	QDockWidget *imageControlsDock;
 	
 	// Tool bar stuff
 	
@@ -86,9 +88,6 @@ class MainWindow : public QMainWindow
 	QString currentWorkingDir;
 	QPrinter *printer;
 	
-	/*HttpCheck *httpcheck;*/
-	/*QAssistantClient *assistantClient;*/
-	
 	double currentZoom;
 	
 	void closeEvent(QCloseEvent *event);
@@ -96,7 +95,6 @@ class MainWindow : public QMainWindow
 	void writeSettings(void);
 	void readSettings(void);
 private slots:
-	void initializeAssistant(void);
 	void about(void);
 	void importImage(void);
 	void saveCrystal(void);
@@ -146,7 +144,6 @@ private slots:
 	void displaySingleIndexingResult(int row, int col);
 	void displaySingleIndexingResult(void);
 	void clearIndexingResults(void);
-	void displayHelp(void);
 	void displayHelpError(QString message);
 public:
 	MainWindow();

@@ -110,6 +110,7 @@
     <addaction name="separator"/>
     <addaction name="actionLaueZoom"/>
     <addaction name="actionLaue_Reset_Zoom"/>
+	<addaction name="separator"/>
     <addaction name="actionReset"/>
     <addaction name="actionDefine_Origin"/>
     <addaction name="actionMeasure_Scale"/>
@@ -522,24 +523,24 @@
   </action>
   <action name="actionLaueZoom">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Zoom</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionLaue_Reset_Zoom">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Reset Zoom</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionBring_All_To_Front">

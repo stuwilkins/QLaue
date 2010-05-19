@@ -155,7 +155,7 @@ void lauegram::init(void) {
 
 	calc_precision = 5;
 	
-	tube_z = XRay::elementNumber("Mo");
+	tube_z = XRay::elementNumber("Cu");
 	
 	calc_intensities = true;
 	
@@ -311,10 +311,6 @@ bool lauegram::calc(Crystal *crystal, bool* abort, int *spotcount) {
 	for(int h=0; h<=maxH; h++){
 		for(int k=0; k<=maxK; k++){
 			for(int l=0; l<=maxL; l++){
-				// For Qt applications we need to release control 
-				// to the qt event que.
-				
-				//qApp->processEvents();
 			
 				int mask = ((h == 0) ? 1 : 0);
 				mask = mask << ((k == 0) ? 1 : 0);
@@ -389,6 +385,9 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 	
 	// Check if we have a fundimental spot or not
 	
+	if((h + k + l) == 0)
+		return false;
+	
 	if(!isFundamental(h,k,l))
 		return false;
 	
@@ -402,28 +401,36 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 		cerr << "magG == " << magG << endl;
 	}
 	
-	// Avoid spots along k_in
+	// Calculate the length of the k_vector.
+	// This is the energy of the spot.
 	
-	if(magG < 0.0001){
-		if(debug)
-			cerr << "magG too small" << endl;
-		//return 0;
+	Matrix k_in(-1,0,0);
+	double k_in_len = 0.5 * magG * magG * (k_in * -1.0).mag() / ((k_in * -1.0).dot(G));
+	
+	// If the k_in_len is negative then the spot is pointing in the wrong direction!
+	
+	if(k_in_len <= 0)
+		return 0;
+	
+	// Now calculate the k_out vector
+	kpri = (G * (1/k_in_len)) + k_in;
+	
+	// Remove spots pointing in the wrong direction
+	
+	if(kpri.dot(k_in) > 0){
+		return 0;
 	}
 	
-	Matrix k_in(1,0,0);
+	// Calculate the maximum diffraction order
 	
-	double k_in_len = 0.5 * magG * magG / (k_in.dot(G));
-	double maxdo;
-	
-	if(!calc_intensities)
-		maxdo = 1;
-	else
-		maxdo = 2 * maxKvec * (k_in.dot(G)) / (magG * magG);
+	double maxdo = maxKvec / k_in_len;
 	
 	if(debug){
 		cerr << "maxdo = " << maxdo << endl;
 		cerr << "k_in_len = " << k_in_len << endl;
 	}
+	
+	// Trap a k_vector which is too big.
 	
 	if(abs(maxdo) < 1){
 		if(debug)
@@ -431,33 +438,24 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 		return 0;
 	}
 	
-	double cos_tth = 1.0-0.5*magG*magG/(k_in_len*k_in_len);
+	double tth = kpri.dot(k_in * -1) / ((k_in * -1).mag() * kpri.mag());
+	tth = M_PI - acos(tth);
 	
-	if(debug)
-		cerr << "cos_tth " << cos_tth << endl;
-	if((cos_tth <= -1.00) || (cos_tth >= 1.00)) {
-		if(debug)
-			cerr << "cos_tth trap" << endl;
-		return 0;
-    }
-	
-	double tth = acos(fabs(cos_tth));
-	
-	if(debug)
-		cerr << "calculated tth = " << 180 - (180.0 * tth / M_PI) << endl;	
-	if((cos_tth >= 0.00)) {
-		if(debug)
-			cerr << "kpri pointing wrong direction" << endl;
-		return 0;
+	if(debug){
+		if((h == 1) && ((k + l) == 0)){
+			// debug for 100
+			cerr << "(100) Debug" << endl;
+			cerr << "G = " << endl;
+			cerr << G << endl;
+			cerr << "kpri = " << endl;
+			cerr << kpri << endl;
+		}
 	}
-		
-	kpri = (G * (1/k_in_len)) - k_in;
 	
 	// Calculate intensity 
 	
 	double inten = 0;
 	int ndocalc = 1;
-	
 	
 	for(int n = 1; n <= abs((int)maxdo) ; n++){
 		int hh = h * n;
@@ -471,7 +469,8 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 			continue;
 		}
 		
-		double sinthoverlambda = /*2.0 * M_PI*/ sin((M_PI - tth) / 2.0) * (this_k_in_len);
+		// sin(theta) / lambda is basically magG .. 
+		double sinthoverlambda = magG * n / 2;
 		
 		if(debug)
 			cerr << "sin(th) / lambda = " << sinthoverlambda << endl;
@@ -482,13 +481,17 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 			cerr << "f = " << sfactor << endl;
 		double thisinten = real(conj(sfactor) * sfactor);
 		if(intensityCorrection() & IntensitySelfAbsorption)
-			thisinten = thisinten * calcAbs( crystal, 1.0 / this_k_in_len , (M_PI - tth) / 2);
+			thisinten = thisinten * calcAbs( crystal, 1.0 / this_k_in_len , tth / 2);
 		if(intensityCorrection() & IntensityXRayTube)
 			thisinten = thisinten * tubeIntensity( 1.0 / this_k_in_len , HC_OVER_E / minKvec);
-		thisinten = thisinten * calcIntensityCorrection( 1.0 / this_k_in_len, M_PI - tth);	
+		thisinten = thisinten * calcIntensityCorrection( 1.0 / this_k_in_len, tth);	
 		inten = inten + thisinten;
 		
-		if(XRay::tubeCharacteristicIntensity( tube_z, 1.0 / this_k_in_len ) > 0.25){
+		double xci = XRay::tubeCharacteristicIntensity(tube_z, 1.0 / this_k_in_len );
+		if(xci > 0.3){
+			if(debug){
+				cerr << "Characteristic Intensity (" << hh << "," << kk << "," << ll << ") E = " << HC_OVER_E * this_k_in_len << " I = " << xci << endl;
+			}
 			spot->setCharacteristic(true);
 		}
 		
@@ -497,7 +500,6 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 		
 		ndocalc++;
 	}
-	inten = inten / ndocalc;
 
 	if(inten < inten_thresh){
 		if(debug){
@@ -508,29 +510,29 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 	}
 	
 	// Make spot
+	// This could be converted to calculate any arbitary film
+	// location.
 	
-	xx = kpri.dot(Matrix(0,-1 * fsDistance,0)) * (1/fabs(cos_tth));
-	yy = kpri.dot(Matrix(0,0,fsDistance)) * (1/fabs(cos_tth));
+	double m = fsDistance / (kpri / kpri.mag()).dot(Matrix(1, 0, 0));
+	xx = kpri.dot(Matrix(0, 1, 0)) * m * -1.0;
+	yy = kpri.dot(Matrix(0, 0, 1)) * m;
 	
 	// Set the LaueSpot class variable to update the values
 	
-	spot->setXYIN(xx,yy,inten,abs((int)maxdo));
+	spot->setXYIN(xx,yy,inten,ndocalc);
 	spot->setHKL(h,k,l);
 	return 1;
-	
 }
 
 double lauegram::calcAbs(Crystal* crystal, double lambda, double th){
 	double mu = crystal->xRayAbsorptionCoeff(lambda);
-	double a;
+	double a = 1.0;
+	
 	if(mu != 0){
 		a = cos((M_PI / 2) - th) + (cos((M_PI / 2) - th) / cos(2*((M_PI / 2) - th)));
 		a = 1000.0 / (a * mu);
-	} else {
-		a = 1.0;
-	}
+	} 
 	
-	//cerr << "lambda = " << lambda << " " << "calcAbs = " << a << endl;
 	return a;
 }
 
@@ -770,39 +772,67 @@ void Reorientation::calc(int thismode){
 	Matrix hPhi2(3,1);
 	Matrix hPhi3(3,1);
 	Matrix R(3,3);
+	Matrix T(3,3);
 	
-	mode = thismode;
+	switch (thismode) {
+		case Reorientation::XAxis:
+			T = Matrix(1,0,0,0,1,0,0,0,1);
+			break;
+		case Reorientation::YAxis:
+			T = Matrix(0,1,0,0,0,1,1,0,0);
+			break;
+		case Reorientation::ZAxis:
+			T = Matrix(0,0,1,1,0,0,0,1,0);
+			break;
+		default:
+			T = Matrix(1,0,0,0,1,0,0,0,1);
+			break;
+	}
 	
-	hPhi = UB * primary;
+	hPhi = T * UB * primary;
 	
 	angles[0][0] = atan2(hPhi.Get(1,0),hPhi.Get(2,0));
-	angles[0][1] = atan2(-1.0 * sqrt(pow(hPhi.Get(2,0),2) + pow(hPhi.Get(1,0),2)), hPhi.Get(0,0));
+	angles[0][1] = atan2(sqrt(pow(hPhi.Get(2,0),2) + pow(hPhi.Get(1,0),2)), hPhi.Get(0,0));
 	angles[0][2] = 0.0;
+	angles[1][0] = M_PI + angles[0][0];
+	angles[1][1] = M_PI - angles[0][1];
+	angles[1][2] = 0.0;
 
-	angles[1][0] = atan2(hPhi.Get(2,0),-1.0 * hPhi.Get(1,0));
-	angles[1][1] = 0.0;
-	angles[1][2] = atan2(-1.0 * sqrt(pow(hPhi.Get(2,0),2) + pow(hPhi.Get(1,0),2)),hPhi.Get(0,0));
+	angles[2][0] = -1.0 * atan2(hPhi.Get(2,0),hPhi.Get(1,0));
+	angles[2][1] = 0.0;
+	angles[2][2] = -1.0 * atan2(sqrt(pow(hPhi.Get(2,0),2) + pow(hPhi.Get(1,0),2)),hPhi.Get(0,0));
+	angles[3][0] = M_PI + angles[2][0];
+	angles[3][1] = 0.0;
+	angles[3][2] = M_PI - angles[2][2];
 	
-	angles[2][0] = 0.0;
-	angles[2][1] = atan2(-1.0 * hPhi.Get(2,0),hPhi.Get(0,0));
-	angles[2][2] = atan2(hPhi.Get(1,0), sqrt(pow(hPhi.Get(0,0),2) + pow(hPhi.Get(2,0),2)));
 	
-	if(mode == Zone){
-		hPhi2 = UB * secondary;
+	angles[4][0] = 0.0;
+	angles[4][1] = atan2(hPhi.Get(2,0),hPhi.Get(0,0));
+	angles[4][2] = -1.0 * atan2(hPhi.Get(1,0), sqrt(pow(hPhi.Get(0,0),2) + pow(hPhi.Get(2,0),2)));
+	angles[5][0] = 0.0;
+	angles[5][1] = M_PI + angles[4][1];
+	angles[5][2] = M_PI - angles[4][2];
 	
-		angles[3][0] = atan2(hPhi2.Get(1,0),hPhi2.Get(2,0));
+	if(thismode == Zone){
+		hPhi2 = T * UB * secondary;
 	
-		R = R.rotateX(angles[3][0]);
-		cerr << "Rotate X " << endl << R << endl;
+		angles[6][0] = atan2(hPhi2.Get(1,0),hPhi2.Get(2,0));
+	
+		R = R.rotateX(-1.0 * angles[3][0]);
 		hPhi3 = R * hPhi;
-		cerr << "hphi3 = " << endl << hPhi3 << endl;
 		
-		angles[3][1] = atan2(-1.0 * hPhi3.Get(2,0),hPhi3.Get(0,0));
-		angles[3][2] = atan2(hPhi3.Get(1,0), sqrt(pow(hPhi3.Get(0,0),2) + pow(hPhi3.Get(2,0),2)));
+		angles[6][1] = atan2(hPhi3.Get(2,0),hPhi3.Get(0,0));
+		angles[6][2] = -1.0 * atan2(hPhi3.Get(1,0), sqrt(pow(hPhi3.Get(0,0),2) + pow(hPhi3.Get(2,0),2)));
+		angles[7][0] = angles[6][0];
+		angles[7][1] = M_PI + angles[6][1];
+		angles[7][2] = M_PI - angles[6][2];
 	} else {
-		angles[3][0] = 0.0;
-		angles[3][1] = 0.0;
-		angles[3][2] = 0.0;
+		angles[6][0] = 0.0;
+		angles[6][1] = 0.0;
+		angles[6][2] = 0.0;
+		angles[7][0] = 0.0;
+		angles[7][1] = 0.0;
+		angles[7][2] = 0.0;
 	}
 }
 
@@ -810,8 +840,8 @@ void Reorientation::setUB(const Matrix newUB){
 	UB = newUB;
 }
 
-double* Reorientation::getAngles(int n){
-	return angles[n];
+double* Reorientation::getAngles(int n, int setting){
+	return angles[(n * 2) + setting ];
 }
 
 Matrix Reorientation::getPrimary(void){

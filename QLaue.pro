@@ -55,7 +55,6 @@ HEADERS += aboutbox.h \
            filmsizedialog.h \
            htmlgenerators.h \
            htmlviewdialog.h \
-#           httpcheck.h \
            indexingdialog.h \
            laue.h \
            lauecontrols.h \
@@ -74,20 +73,21 @@ HEADERS += aboutbox.h \
            xraybe.h \
            xrayel.h \
            preferences.h \
-	   adjustimage.h
+	   adjustimage.h \
+	   imagecontrols.h 
 FORMS += aboutbox.ui \
          crystaldialog.ui \
          crystalwidget.ui \
          filmsizedialog.ui \
          htmlviewdialog.ui \
-#         httpcheck.ui \
          indexingdialog.ui \
          lauecontrols.ui \
          mainwindow.ui \
          reorientdialog.ui \
          rotatewidget.ui \
          setubmat.ui\
-         preferences.ui 
+         preferences.ui \
+	 imagecontrols.ui 
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \
@@ -97,7 +97,6 @@ SOURCES += aboutbox.cpp \
            filmsizedialog.cpp \
            htmlgenerators.cpp \
            htmlviewdialog.cpp \
-#           httpcheck.cpp \
            indexingdialog.cpp \
            laue.cpp \
            lauecontrols.cpp \
@@ -110,5 +109,6 @@ SOURCES += aboutbox.cpp \
            setubmat.cpp \
            xray.cpp \
            preferences.cpp \
-	   adjustimage.cpp 
+	   adjustimage.cpp \
+	   imagecontrols.cpp 
 RESOURCES += resources.qrc

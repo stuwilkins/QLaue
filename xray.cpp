@@ -81,7 +81,6 @@ double XRay::massAbsorption(int Z, double lambda) {
 	double massAbs;
 	massAbs = 2 * lambda * 1e-10 * R_ZERO * N_A * 1e3 / xrayatomic_mass[Z-1];
 	complex<double> f1f2 = getXf1f2(Z,lambda);
-	//cerr << "f1f2 = " << f1f2 << endl;
 	massAbs = massAbs * f1f2.imag();
 	return massAbs;
 }
@@ -92,10 +91,13 @@ double XRay::tubeIntensity(double lambda, double V){
 	double i = (V - e) / e; // this is the intensity
 	if(i < 0)
 		return 0.0;
-	double mu =  massAbsorption(4,lambda) * 1848; // Density of Be
-	//cerr << "mu = " << mu << endl;
-	i = i * exp(-1.0 * 0.0005 * mu); // 0.5mm Be Window
 	
+	double mu =  massAbsorption(4,lambda) * 1848; // Density of Be
+	if(mu >= 0){
+		i = 0;
+	} else {
+		i = i * exp(0.0005 * mu); // 0.5mm Be Window
+	}
 	return i;
 }
 

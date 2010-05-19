@@ -504,9 +504,9 @@ void Crystal::setFreeRotate(bool state){
 		// Free rotate so rotate the actual U Matrix
 		// by the current gonio angles
 		Matrix X(3,3),Y(3,3),Z(3,3);
-		X = X.rotateX(gonioX);
-		Y = Y.rotateY(gonioY);
-		Z = Z.rotateZ(gonioZ);
+		X = X.rotateX(-gonioX);
+		Y = Y.rotateY(-gonioY);
+		Z = Z.rotateZ(-gonioZ);
 		gonioX = 0; gonioY = 0; gonioZ = 0;
 		R.identity() ; Rinv.identity();
 		U = Z * Y * X * U;
@@ -517,10 +517,10 @@ void Crystal::setFreeRotate(bool state){
 void Crystal::rotateBy(double a, double b, double c){
 	if(freeRotate) {
 		Matrix X(3,3),Y(3,3),Z(3,3);
-		X = X.rotateX(a);
-		Y = Y.rotateY(b);
-		Z = Z.rotateZ(c);
-		U = Z * Y * X * U;
+		X = X.rotateX(-a);
+		Y = Y.rotateY(-b);
+		Z = Z.rotateZ(-c);
+		U = Z* Y * X * U;
 		calcUB();
 	} else {
 		gonioX = gonioX + a; 
@@ -533,10 +533,13 @@ void Crystal::rotateBy(double a, double b, double c){
 void Crystal::rotateTo(double a, double b, double c){
 	if(freeRotate){
 		Matrix X(3,3),Y(3,3),Z(3,3);
-		X = X.rotateX(a);
-		Y = Y.rotateY(b);
-		Z = Z.rotateZ(c);
+		X = X.rotateX(-a);
+		Y = Y.rotateY(-b);
+		Z = Z.rotateZ(-c);
+		cerr << "Start U " << endl << U << endl;
 		U = Z * Y * X * U;
+		cerr << "RotTo = " << a << "," << b << "," << c << endl;
+		cerr << "End U " << endl << U << endl;
 		calcUB();
 	} else {
 		gonioX = a; 
@@ -548,9 +551,9 @@ void Crystal::rotateTo(double a, double b, double c){
 
 void Crystal::setGoniometer(void){
 	Matrix X(3,3),Y(3,3),Z(3,3);
-	X = X.rotateX(gonioX);
-	Y = Y.rotateY(gonioY);
-	Z = Z.rotateZ(gonioZ);
+	X = X.rotateX(-gonioX);
+	Y = Y.rotateY(-gonioY);
+	Z = Z.rotateZ(-gonioZ);
 	
 	R = Z * Y * X;
 	Rinv = R.transpose();
@@ -588,7 +591,7 @@ void Crystal::rotateAboutBy(Matrix axis, double angle){
 			
 	Matrix X(3,3);
 	X.identity();
-	X = X.rotateX(angle);
+	X = X.rotateX(-angle);
 	
 	R.identity();
 	R = Tc * X * Tc.transpose();

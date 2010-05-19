@@ -170,8 +170,8 @@ private:
 	void addIndexLabel(double h, double k, double l);
 	double pixelsToMm(int pixels);
 	int mmToPixels(double mm);
-	QPointF pixelsToWorld(QPoint pixel, QRect rect);
-	QPoint  worldToPixels(QPointF world, QRect rect);
+	QPointF pixelsToWorld(QPoint pixel);
+	QPoint  worldToPixels(QPointF world);
 	
 	void setBit(int *flags, int flag, int toset);
 	bool getBit(int flags, int flag);
@@ -185,7 +185,9 @@ public:
 	Crystal* getCrystal(void)		{ return crystal; }
 	
 	QImage *importedScaledImage;
+	QImage *importedAdjustedImage;
 	QImage *importedImage;
+	QRect imageZoomRect; 
 	
 	LaueThread* getLaue(void)		{ return laue; }
 	LaueIndexingThread* getIndexing(void)	{return laueIndexing; }
@@ -227,7 +229,9 @@ public:
 		DisplayIndexing =			0x080,
 		DisplayUBIndexing =			0x100,
 		DisplayImageInverted =		0x200,
-		DisplayRotateAboutCross =	0x400
+		DisplayRotateAboutCross =	0x400,
+		DisplayImagePseudoColor =   0x800,
+		DisplayImageRotated =       0x1000
 	};
 	
 	enum {
@@ -261,7 +265,8 @@ public slots:
 	void setSpotSize(int spotsize)					{ max_spot_size = spotsize; update(); }
 	int  getSpotSize(void)							{ return max_spot_size; }
 	void setInvertImage(bool yesno);
-	void setDisplayImage(bool yesno);				
+	void setDisplayImage(bool yesno);
+	void setRotateImage(bool yesno);
 	void displayMessage(const QString message);
 	void clearMessage(void);
 	void setPixelsPerMMFromImage(void);
@@ -278,6 +283,10 @@ public slots:
 	void setOrientation(void);
 	void resetOrientation(void);
 	void reCalc(void);
+	void adjustImage(double, double, double, double);
+	void setImage(QImage& image, bool display);
+	void setAdjustedImage(void);
+	double imageScaleFactor(void);
 protected:
 	void paintEvent(QPaintEvent *event);
 	void mousePressEvent(QMouseEvent *event);

@@ -59,13 +59,12 @@ private:
 	
 	void setupTable(void);
 	void setTableItem(QTableWidget *table, int x, int y, double val);
-	void setBlankTableItem(QTableWidget *table, int x, int y);
-	
 private slots:
 	void go(void);
 	void okPressed(void);
 	void printPressed(void);
 	void cancelPressed(void);
+	void updateTable(void);
 };
 
 #endif

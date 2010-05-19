@@ -309,10 +309,10 @@ Matrix Matrix::rotateX(double alpha) {
 	
 	R.Set(1,0,0);
 	R.Set(1,1,cos(alpha));
-	R.Set(1,2,-1.0 * sin(alpha));
+	R.Set(1,2,sin(alpha));
 	
 	R.Set(2,0,0);
-	R.Set(2,1,sin(alpha));
+	R.Set(2,1,-1.0 * sin(alpha));
 	R.Set(2,2,cos(alpha));
 	
 	return R;

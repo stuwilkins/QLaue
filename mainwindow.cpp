@@ -26,9 +26,11 @@
 
 #include <QtGui>
 #include <QAbstractItemView>
+
 #ifdef Q_WS_MAC
 #include <Carbon/Carbon.h>
 #endif
+
 #include "ui_mainwindow.h"
 #include "version.h"
 #include "mainwindow.h"
@@ -45,7 +47,7 @@
 #include "crystalwidget.h"
 #include "htmlviewdialog.h"
 #include "htmlgenerators.h"
-#include "httpcheck.h"
+#include "imagecontrols.h"
 
 MainWindowWidget::MainWindowWidget(QWidget *parent, Crystal *c) : QWidget(parent) {
 	//setMinimumSize(QSize(300,500));
@@ -93,59 +95,11 @@ MainWindow::MainWindow() : QMainWindow() {
 	updateRecentFileActions();		// Setup recent crystals
 	
 	newCrystal();					// Initializes the crystal
-	/*httpcheck = new HttpCheck(this);
-	httpcheck->checkVersion();*/
 	
 	recalculated();
 	readSettings();
 	
 	setCurrentFile(QString(""));
-	
-	// Initialize help viewer (QT Assistant)
-	
-	// initializeAssistant();
-}
-
-void MainWindow::initializeAssistant() {
-/*
-  QString assistantDir;
-  QString resourcesDir;
-
-#ifdef Q_OS_MACX
-	CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-	CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, 
-												  kCFURLPOSIXPathStyle);
-	char buffer[1000];
-	CFStringGetCString(macPath, buffer, 1000, CFStringGetSystemEncoding());
-	assistantDir = QString(buffer);
-	assistantDir = assistantDir + QString("/Contents/MacOS");
-	resourcesDir = QString(buffer);
-	resourcesDir = resourcesDir + QString("/Resources");
-	CFRelease(pluginRef);
-	CFRelease(macPath);
-#endif
-
-	//assistantDir = QString("/usr/local/Trolltech/qt/bin");
-
-	qDebug("MainWindow::initializeAssistant() : Looking for assistant in %s",
-		   qPrintable(assistantDir));
-	
-	assistantClient = new QAssistantClient(assistantDir, this);
-	
-	QStringList arguments;
-	arguments << "-profile" << resourcesDir + QDir::separator() + QString("QLaue.adp");
-	assistantClient->setArguments(arguments);
-	
-	connect(assistantClient, SIGNAL(error(QString)), this, SLOT(displayHelpError(QString)));
-  */
-}
-
-void MainWindow::displayHelp() {
-/*
-	QString page("doc/index.html");
-	qDebug("MainWindow::displayHelp() : page = %s", qPrintable(page));
-	assistantClient->showPage(page);
-*/
 }
 
 void MainWindow::displayHelpError(QString message) {
@@ -156,6 +110,7 @@ void MainWindow::createDockWindows(void){
 	
 	rotate = new RotateWidget;
 	lauecontrols = new LaueControls;
+	imagecontrols = new ImageControlWidget;
 	
 	laueControlsDock = new QDockWidget(tr("Laue Controls"), this);
 	laueControlsDock->setObjectName("LaueControlsDock");
@@ -173,6 +128,15 @@ void MainWindow::createDockWindows(void){
 	rotateWidgetDock->setWidget(rotate);
 	addDockWidget(Qt::RightDockWidgetArea, rotateWidgetDock);
 	rotateWidgetDock->hide();
+	
+	imageControlsDock = new QDockWidget(tr("Image Controls"), this);
+	imageControlsDock->setObjectName("ImageControlDock");
+	imageControlsDock->setFixedSize(rotate->size() + QSize(0,25));
+	imageControlsDock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+	imageControlsDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	imageControlsDock->setWidget(imagecontrols);
+	addDockWidget(Qt::RightDockWidgetArea, imageControlsDock);
+	imageControlsDock->show();
 	
 	textViewDock = new QDockWidget(tr("Data View"), this);
 	textViewDock->setObjectName("TextViewDock");
@@ -211,7 +175,6 @@ void MainWindow::createConnections(void){
 	// Connections for the rotate dialog
 	
 	connect(rotate, SIGNAL(valueChanged(double,double,double)), this, SLOT(rotateCrystal(double,double,double)));
-	connect(rotate, SIGNAL(setGoniometerPos()), this, SLOT(setGoniometer()));
 			
 	// Allow lauewidget to rotate the crystal
 	
@@ -236,7 +199,9 @@ void MainWindow::createConnections(void){
 	connect(lauecontrols, SIGNAL(showCharacteristicChanged(int)), film, SLOT(setDisplayCharacteristicInt(int)));
 	connect(lauecontrols, SIGNAL(showIntensitiesAsColor(bool)), film, SLOT(setDisplayIntensitiesAsColor(bool)));
 	
-	// Calculation connections
+	// Connections for image adjustments
+	
+	connect(imagecontrols, SIGNAL(valueChanged(double, double, double, double)), film, SLOT(adjustImage(double, double, double, double))); 
 	
 	// Connections for progress bar
 	
@@ -318,7 +283,6 @@ void MainWindow::readSettings(void){
 	ui.actionCrystal_Orientation_View->setChecked(crystalDock->isVisibleTo(this));
 	ui.actionIndexing_Viewer->setChecked(indexingDock->isVisibleTo(this));
 	ui.actionRotations_Toolbox->setChecked(rotateWidgetDock->isVisibleTo(this));
-	qDebug("MainWindow::readSettings() : rotate = %d", rotateWidgetDock->isVisibleTo(this));
 	
 }
 
@@ -380,7 +344,6 @@ void MainWindow::setupActions(void){
 	
 	connect(ui.actionSet_Orientation, SIGNAL(triggered()), this, SLOT(displayUMatrixDialog()));
 	connect(ui.actionLattice, SIGNAL(triggered()), this, SLOT(displayCrystalDialog()));
-	//connect(ui.actionSet_Free_Rotate, SIGNAL(toggled(bool)), rotate, SLOT(setFreeRotate(bool)));
 	connect(ui.actionView_Crystal_Parameters, SIGNAL(triggered()), this, SLOT(displayCrystalParametersDialog()));
 
 	// Laue menu
@@ -392,6 +355,7 @@ void MainWindow::setupActions(void){
 	connect(ui.actionReset, SIGNAL(triggered()), film, SLOT(resetView()));
 	connect(ui.actionShow_Image, SIGNAL(toggled(bool)), film, SLOT(setDisplayImage(bool)));
 	connect(ui.actionInvert_Image, SIGNAL(toggled(bool)), film, SLOT(setInvertImage(bool)));
+	connect(ui.actionRotate_Image, SIGNAL(toggled(bool)), film, SLOT(setRotateImage(bool)));
 	connect(ui.actionLaueZoom, SIGNAL(triggered()), film, SLOT(measureZoom()));
 	connect(ui.actionLaue_Reset_Zoom, SIGNAL(triggered()), film, SLOT(resetZoom()));
 	connect(ui.actionShow_Labels, SIGNAL(toggled(bool)), film, SLOT(showLabels(bool)));
@@ -413,7 +377,6 @@ void MainWindow::setupActions(void){
 	// Help Menu
 	
 	connect(ui.action_About, SIGNAL(triggered()), this, SLOT(about()));
-	connect(ui.action_Help, SIGNAL(triggered()), this, SLOT(displayHelp()));
 	
 	setDisplayImageControls(false);
 	
@@ -466,8 +429,8 @@ void MainWindow::createToolBars(void){
 	laueToolBar = addToolBar(tr("Laue"));
 	laueToolBar->setMovable(false);
 	laueToolBar->setObjectName("LaueToolBar");
-	//laueToolBar->addAction(ui.actionLaueZoom);
-	//laueToolBar->addAction(ui.actionLaue_Reset_Zoom);
+	laueToolBar->addAction(ui.actionLaueZoom);
+	laueToolBar->addAction(ui.actionLaue_Reset_Zoom);
 	laueToolBar->addAction(ui.actionDefine_Origin);
 	laueToolBar->addAction(ui.actionMeasure_Scale);
 	laueToolBar->addAction(ui.actionRotate_about_axis);
@@ -578,7 +541,6 @@ void MainWindow::openRecent(void){
 void MainWindow::loadCrystal(QString filename){	
 	
 	DataFile datafile;
-	
 	if(!datafile.read(filename)){
 		// We have an error ... read the errors from 
 		// the datafile class
@@ -597,8 +559,7 @@ void MainWindow::loadCrystal(QString filename){
 	
 	QImage image = datafile.getLaueImage();
 	if(!image.isNull()){
-		*(film->importedImage) = image;
-		*(film->importedScaledImage) = image;
+		film->setImage(image, true);
 		film->setOriginX(datafile.originX());
 		film->setOriginY(datafile.originY());
 		film->setScale(datafile.imageScale());
@@ -714,11 +675,8 @@ void MainWindow::importImage(void){
 											 "Choose Image",
 											 currentWorkingDir,
 											 "Images (*.png *.xpm *.jpg *.tif *.tiff)");
-	if(s == NULL){
-		setDisplayImageControls(false);
-		film->setDisplayImage(false);
+	if(s == NULL)
 		return;
-	}
 	
 	QImage pixmap;
 	
@@ -730,19 +688,17 @@ void MainWindow::importImage(void){
 							 QMessageBox::Ok,
 							 QMessageBox::NoButton,
 							 QMessageBox::NoButton);
-		setDisplayImageControls(false);
-		film->setDisplayImage(false);
 		return;
 	}
 	
-	*(film->importedImage) = pixmap;
-	*(film->importedScaledImage) = pixmap;
-	//film->setPixelsPerMMFromImage();
-	film->setDisplayImage(true);
+	film->setImage(pixmap, true);
+	QString imageInfo = QString("%1 x %2 pixels").arg(pixmap.width()).arg(pixmap.height());
+	imagecontrols->setImageInfo(imageInfo);
 	setDisplayImageControls(true);
-	
-	statusBar()->showMessage(QString("Imported %1 (%2 x %3 pixels).")
-							 .arg(strippedName(s)).arg(pixmap.width()).arg(pixmap.height()),5000);
+	imagecontrols->setDefaults();
+	statusBar()->showMessage(QString("Imported %1 (%2 x %3 pixels) (%4 pixels.mm^-1).")
+							.arg(strippedName(s)).arg(pixmap.width()).arg(pixmap.height())
+							.arg(pixmap.dotsPerMeterY() * 1e3), 5000);
 }
 
 void MainWindow::printAction(void){
@@ -838,8 +794,8 @@ void MainWindow::setDisplayImageControls(bool yesno){
 	ui.actionShow_Image->setEnabled(yesno);
 	ui.actionLaueZoom->setEnabled(yesno);
 	ui.actionLaue_Reset_Zoom->setEnabled(yesno);
-	//ui.actionLaueZoom->setEnabled(false);
-	//ui.actionLaue_Reset_Zoom->setEnabled(false);
+	ui.actionRotate_Image->setEnabled(yesno);
+	imagecontrols->setScrollbarsEnabled(yesno);
 }
 
 void MainWindow::zoomIn(void){

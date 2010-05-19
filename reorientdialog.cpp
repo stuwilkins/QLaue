@@ -44,6 +44,8 @@ ReorientDialog::ReorientDialog(QWidget *parent) : QDialog(parent) {
 	connect(ui.okButton, SIGNAL(clicked()),this, SLOT(okPressed()));
 	connect(ui.printButton, SIGNAL(clicked()),this, SLOT(printPressed()));
 	connect(ui.cancelButton, SIGNAL(clicked()),this, SLOT(cancelPressed()));
+	connect(ui.AngleRangeP, SIGNAL(toggled(bool)), this, SLOT(updateTable()));
+	connect(ui.AngleRangePM, SIGNAL(toggled(bool)), this, SLOT(updateTable()));
 	
 	ui.XAxisButton->setChecked(true);
 	ui.ZHLineEdit->setEnabled(false);
@@ -96,7 +98,6 @@ void ReorientDialog::setCrystal(Crystal* newCrystal){
 }
 
 void ReorientDialog::go(void){
-	double *angles;
 	double h,k,l;
 	
 	h = ui.XHLineEdit->text().toDouble();
@@ -115,53 +116,46 @@ void ReorientDialog::go(void){
 		l2 = ui.ZLLineEdit->text().toDouble();
 		laue->reorientation.setSecondary(h2,k2,l2);
 		laue->reorientation.calc(Reorientation::Zone);
-		angles = laue->reorientation.getAngles(Reorientation::RotateXYZ);
-		
-		setTableItem(ui.DataTable, 0, 0, angles[0] * 180.0 / M_PI);
-		setTableItem(ui.DataTable, 0, 1, angles[1] * 180.0 / M_PI);
-		setTableItem(ui.DataTable, 0, 2, angles[2] * 180.0 / M_PI);
-		
-		for(int i=0; i< 3 ; ++i){
-			for(int j=1;j<4;++j){
-				setBlankTableItem(ui.DataTable, j, i);
-			}
-		}
-		
 	} else {
-		laue->reorientation.calc(Reorientation::XAxis);
-		
-		angles = laue->reorientation.getAngles(Reorientation::RotateXY);
-		setTableItem(ui.DataTable, 0, 0, angles[0] * 180.0 / M_PI);
-		setTableItem(ui.DataTable, 0, 1, angles[1] * 180.0 / M_PI);
-		setBlankTableItem(ui.DataTable, 0, 2);
-	
-		angles = laue->reorientation.getAngles(Reorientation::RotateXZ);
-		setTableItem(ui.DataTable, 1, 0, angles[0] * 180.0 / M_PI);
-		setBlankTableItem(ui.DataTable, 1, 1);
-		setTableItem(ui.DataTable, 1, 2, angles[2] * 180.0 / M_PI);
-	
-		angles = laue->reorientation.getAngles(Reorientation::RotateYZ);
-		setBlankTableItem(ui.DataTable, 2, 0);
-		setTableItem(ui.DataTable, 2, 1, angles[1] * 180.0 / M_PI);
-		setTableItem(ui.DataTable, 2, 2, angles[2] * 180.0 / M_PI);
-		
-		setBlankTableItem(ui.DataTable, 3, 0);
-		setBlankTableItem(ui.DataTable, 3, 1);
-		setBlankTableItem(ui.DataTable, 3, 2);
+		int mode = Reorientation::XAxis;
+		if(ui.XAxisRadioButton->isChecked()){
+			mode = Reorientation::XAxis;
+		}
+		if(ui.YAxisRadioButton->isChecked()){
+			mode = Reorientation::YAxis;
+		}
+		if(ui.ZAxisRadioButton->isChecked()){
+			mode = Reorientation::ZAxis;
+		}
+		laue->reorientation.calc(mode);
 	}
+	
+	updateTable();
 	
 	ui.okButton->setEnabled(true);
 	ui.printButton->setEnabled(true);
 }
 
+void ReorientDialog::updateTable(void){
+	double *angles;
+	for(int i = 0;i<4;i++){
+		for(int s = 0;s<2;s++){
+			angles = laue->reorientation.getAngles(i, s);
+			setTableItem(ui.DataTable, (i * 2) + s, 0, angles[0] * 180.0 / M_PI);
+			setTableItem(ui.DataTable, (i * 2) + s, 1, angles[1] * 180.0 / M_PI);
+			setTableItem(ui.DataTable, (i * 2) + s, 2, angles[2] * 180.0 / M_PI);
+		}	
+	}
+}
+
 void ReorientDialog::setupTable(void){
 	
-	ui.DataTable->setRowCount(4);
+	ui.DataTable->setRowCount(8);
 	ui.DataTable->setColumnCount(3);
 	
-	ui.DataTable->setColumnWidth(0,95);
-	ui.DataTable->setColumnWidth(1,95);
-	ui.DataTable->setColumnWidth(2,95);
+	ui.DataTable->setColumnWidth(0,100);
+	ui.DataTable->setColumnWidth(1,100);
+	ui.DataTable->setColumnWidth(2,100);
 	
 	QStringList hHeaders, vHeaders;
 	hHeaders << "Rot X" << "Rot Y" << "Rot Z";
@@ -172,16 +166,23 @@ void ReorientDialog::setupTable(void){
 }
 
 void ReorientDialog::setTableItem(QTableWidget *table, int x, int y, double val) {
-	QTableWidgetItem *newItem = new QTableWidgetItem(QString("%1").arg(val,3,'f',2));
-	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	newItem->setTextColor(QColor("black"));
-	newItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	table->setItem(x,y, newItem);
-}
-
-void ReorientDialog::setBlankTableItem(QTableWidget *table, int x, int y) {
-	QTableWidgetItem *newItem = new QTableWidgetItem();
-	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	newItem->setBackgroundColor(QColor("lightgray"));
-	table->setItem(x,y, newItem);
+	
+	if(val == 0.0){
+		QTableWidgetItem *newItem = new QTableWidgetItem();
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+		newItem->setBackgroundColor(QColor("lightgray"));
+		table->setItem(x,y, newItem);
+	} else {
+		double newval = val;
+		if(ui.AngleRangeP->isChecked() == TRUE){
+			if(val < 0){
+				newval = val + 360.0;
+			} 
+		} 
+		QTableWidgetItem *newItem = new QTableWidgetItem(QString("%1").arg(newval,3,'f',2));
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+		newItem->setTextColor(QColor("black"));
+		newItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+		table->setItem(x,y, newItem);
+	}
 }

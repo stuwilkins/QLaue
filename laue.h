@@ -63,7 +63,7 @@ bool operator<(const LaueOrientations& a, const LaueOrientations& b);
 
 class Reorientation {
 private:
-	double angles[4][3];
+	double angles[8][3];
 	Matrix primary;
 	Matrix secondary;
 	Matrix UB;
@@ -79,7 +79,7 @@ public:
 	
 	// get Parameters
 	
-	double* getAngles(int n);
+	double* getAngles(int n, int seting = 0);
 	Matrix getPrimary(void);
 	Matrix getSecondary(void);
 	int getMode(void);
@@ -95,7 +95,9 @@ public:
 	enum {
 		Unknown = 0,
 		XAxis = 1,
-		Zone = 2
+		YAxis = 2,
+		ZAxis = 3,
+		Zone = 4
 	};
 	enum {
 		RotateXY = 0,
