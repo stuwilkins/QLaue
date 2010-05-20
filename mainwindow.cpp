@@ -792,8 +792,10 @@ QString MainWindow::strippedName(const QString &fullFileName) {
 void MainWindow::setDisplayImageControls(bool yesno){
 	ui.actionInvert_Image->setEnabled(yesno);
 	ui.actionShow_Image->setEnabled(yesno);
-	ui.actionLaueZoom->setEnabled(yesno);
-	ui.actionLaue_Reset_Zoom->setEnabled(yesno);
+	//ui.actionLaueZoom->setEnabled(yesno);
+	//ui.actionLaue_Reset_Zoom->setEnabled(yesno);
+	ui.actionLaueZoom->setEnabled(false);
+	ui.actionLaue_Reset_Zoom->setEnabled(false);
 	ui.actionRotate_Image->setEnabled(yesno);
 	imagecontrols->setScrollbarsEnabled(yesno);
 }

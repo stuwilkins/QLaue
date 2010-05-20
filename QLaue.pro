@@ -26,7 +26,10 @@
 
 TEMPLATE = app
 TARGET = 
-CONFIG += x86_64 
+CONFIG += x86_64 x86
+#CONFIG += x86_64
+
+CONFIG += release
 
 QT += xml network
 

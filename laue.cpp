@@ -378,6 +378,8 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 	Matrix kpri(3,1);
 	double xx,yy;
 	
+	//debug = 1;
+	
 	if(debug){
 		cerr << "----------------------------------------" << endl;
 		cerr << "HKL = " << h << "," << k << "," << l << endl;
@@ -385,11 +387,19 @@ bool lauegram::calcHKL(Crystal *crystal, LaueSpot *spot, int h, int k, int l){
 	
 	// Check if we have a fundimental spot or not
 	
-	if((h + k + l) == 0)
+	if((abs(h) + abs(k) + abs(l)) == 0){
+		if(debug){
+			cerr << "ORIGIN" << endl;
+		}
 		return false;
+	}
 	
-	if(!isFundamental(h,k,l))
+	if(!isFundamental(h,k,l)){
+		if(debug){
+			cerr << "Not a fundamental HKL" << endl;
+		}
 		return false;
+	}
 	
 	R = Matrix(h,k,l);
 	G = crystal->getUB() * R;

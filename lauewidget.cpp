@@ -875,7 +875,17 @@ void LaueFilm::paintLaue(QPainter *painter, QRect size) {
 		
 			painter->setBrush(bremsColor);
 			painter->setPen(QColor("blue"));
+
 			if(getBit(display, LaueFilm::DisplayLabels)){
+				int hkl = abs(laue->getSpot(i)->H()) + abs(laue->getSpot(i)->K()) + abs(laue->getSpot(i)->L());
+				if(hkl <= 3){
+					painter->drawText(spot.topRight() + QPoint(spot_size,fontpad), 
+									  QString("(%1 %2 %3)")
+									  .arg(laue->getSpot(i)->H())
+									  .arg(laue->getSpot(i)->K())
+									  .arg(laue->getSpot(i)->L()));
+				}
+				
 				for(int j=mouseover_hkl_label;j<num_hkl_labels;j++){
 					if((laue->getSpot(i)->H() == hkl_labels[j][0]) &&
 					   (laue->getSpot(i)->K() == hkl_labels[j][1]) &&
