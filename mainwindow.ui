@@ -67,12 +67,11 @@
      <property name="title">
       <string>Tools</string>
      </property>
-     <addaction name="actionControls_Toolbox"/>
-     <addaction name="separator"/>
      <addaction name="actionCrystal_Orientation_View"/>
      <addaction name="actionRotations_Toolbox"/>
      <addaction name="actionIndexing_Viewer"/>
      <addaction name="actionText_Viewer"/>
+     <addaction name="actionImage_Controls"/>
     </widget>
     <addaction name="menuTools"/>
     <addaction name="actionBring_All_To_Front"/>
@@ -100,6 +99,7 @@
      <string>Laue</string>
     </property>
     <addaction name="actionImport_Image"/>
+	<addaction name="actionAquire_Image"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Image"/>
     <addaction name="actionInvert_Image"/>
@@ -110,7 +110,7 @@
     <addaction name="separator"/>
     <addaction name="actionLaueZoom"/>
     <addaction name="actionLaue_Reset_Zoom"/>
-	<addaction name="separator"/>
+    <addaction name="separator"/>
     <addaction name="actionReset"/>
     <addaction name="actionDefine_Origin"/>
     <addaction name="actionMeasure_Scale"/>
@@ -589,42 +589,15 @@
     <string>Crystal Orientation View</string>
    </property>
   </action>
-  <action name="actionControls_Toolbox">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Controls Toolbox</string>
-   </property>
-  </action>
   <action name="actionText_Viewer">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Text Viewer</string>
-   </property>
-  </action>
-  <action name="actionView_Diffraction_Results">
-   <property name="text">
-    <string>View Diffraction Results</string>
-   </property>
-  </action>
-  <action name="actionShow_OOP">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Out Of Plane Angle</string>
    </property>
   </action>
   <action name="actionSolve_Orientation">
@@ -690,6 +663,22 @@
    </property>
    <property name="text">
     <string>Rotate Image</string>
+   </property>
+  </action>
+  <action name="actionImage_Controls">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Image Controls</string>
+   </property>
+  </action>
+  <action name="actionAquire_Image">
+   <property name="text">
+    <string>Aquire Image ...</string>
    </property>
   </action>
  </widget>

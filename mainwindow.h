@@ -38,6 +38,7 @@
 #include "crystal.h"
 #include "crystalwidget.h"
 #include "imagecontrols.h"
+#include "pslcamera.h"
 
 class MainWindowWidget : public QWidget {
 	Q_OBJECT
@@ -46,7 +47,6 @@ class MainWindowWidget : public QWidget {
 public:
 	MainWindowWidget(QWidget *parent = 0, Crystal *c = 0);
 	LaueFilm* getLaueFilm(void)					{ return film; }
-	void showMushroom(void);
 	void showLaue(void);
 protected:
 	void resizeEvent(QResizeEvent* event);
@@ -88,6 +88,10 @@ class MainWindow : public QMainWindow
 	QString currentWorkingDir;
 	QPrinter *printer;
 	
+	// PSL Camera
+	
+	PSLCameraThread *camera;
+	
 	double currentZoom;
 	
 	void closeEvent(QCloseEvent *event);
@@ -97,6 +101,7 @@ class MainWindow : public QMainWindow
 private slots:
 	void about(void);
 	void importImage(void);
+	void aquireImage(void);
 	void saveCrystal(void);
 	void saveAsCrystal(void);
 	void open(void);
@@ -145,6 +150,7 @@ private slots:
 	void displaySingleIndexingResult(void);
 	void clearIndexingResults(void);
 	void displayHelpError(QString message);
+	void aquiredImageAvaliable(void);
 public:
 	MainWindow();
 private:

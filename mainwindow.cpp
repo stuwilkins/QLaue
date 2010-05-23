@@ -48,6 +48,7 @@
 #include "htmlviewdialog.h"
 #include "htmlgenerators.h"
 #include "imagecontrols.h"
+#include "pslcamera.h"
 
 MainWindowWidget::MainWindowWidget(QWidget *parent, Crystal *c) : QWidget(parent) {
 	//setMinimumSize(QSize(300,500));
@@ -87,6 +88,8 @@ MainWindow::MainWindow() : QMainWindow() {
 	int screenHeight = QApplication::desktop()->height();
 	setMaximumSize(screenWidth, screenHeight);
 	
+	camera = new PSLCameraThread(this);
+	
 	createDockWindows();			// Create Dock Windows
 	createConnections();			// Create all connections
 	createToolBars();				// Create all Toolbars
@@ -119,6 +122,7 @@ void MainWindow::createDockWindows(void){
 	laueControlsDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	laueControlsDock->setWidget(lauecontrols);
 	addDockWidget(Qt::LeftDockWidgetArea, laueControlsDock);
+	laueControlsDock->show();
 		
 	rotateWidgetDock = new QDockWidget(tr("Crystal Rotations"), this);
 	rotateWidgetDock->setObjectName("RotateWidgetDock");
@@ -127,7 +131,7 @@ void MainWindow::createDockWindows(void){
 	rotateWidgetDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	rotateWidgetDock->setWidget(rotate);
 	addDockWidget(Qt::RightDockWidgetArea, rotateWidgetDock);
-	rotateWidgetDock->hide();
+	rotateWidgetDock->show();
 	
 	imageControlsDock = new QDockWidget(tr("Image Controls"), this);
 	imageControlsDock->setObjectName("ImageControlDock");
@@ -165,7 +169,7 @@ void MainWindow::createDockWindows(void){
 	indexingDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	indexingDock->setWidget(indexingWidget);
 	addDockWidget(Qt::RightDockWidgetArea,indexingDock);
-	indexingDock->show();
+	indexingDock->hide();
 	
 	lauecontrols->setAll(film);
 }
@@ -208,6 +212,10 @@ void MainWindow::createConnections(void){
 	connect(film->getLaue(),SIGNAL(calcStarted()), this, SLOT(setProgressBar()));
 	connect(film->getLaue(),SIGNAL(spotsToGo(int)), progressBar, SLOT(setValue(int)));
 	connect(film->getLaue(),SIGNAL(calculated()), this, SLOT(resetStatusBar()));
+	
+	// Connections for image aquire
+	
+	connect(camera, SIGNAL(newImage()), this, SLOT(aquiredImageAvaliable()));
 
 }
 
@@ -283,7 +291,7 @@ void MainWindow::readSettings(void){
 	ui.actionCrystal_Orientation_View->setChecked(crystalDock->isVisibleTo(this));
 	ui.actionIndexing_Viewer->setChecked(indexingDock->isVisibleTo(this));
 	ui.actionRotations_Toolbox->setChecked(rotateWidgetDock->isVisibleTo(this));
-	
+	ui.actionImage_Controls->setChecked(imageControlsDock->isVisibleTo(this));
 }
 
 void MainWindow::writeSettings(void){
@@ -349,6 +357,7 @@ void MainWindow::setupActions(void){
 	// Laue menu
 	
 	connect(ui.actionImport_Image, SIGNAL(triggered()), this, SLOT(importImage()));
+	connect(ui.actionAquire_Image, SIGNAL(triggered()), this, SLOT(aquireImage()));
 	connect(ui.actionDefine_Origin, SIGNAL(triggered()), film, SLOT(setOrigin()));
 	connect(ui.actionMeasure_Scale, SIGNAL(triggered()), film, SLOT(measureScale()));
 	connect(ui.actionImage_Scale, SIGNAL(triggered()), film, SLOT(setImageScale()));
@@ -373,6 +382,7 @@ void MainWindow::setupActions(void){
 	connect(ui.actionCrystal_Orientation_View, SIGNAL(toggled(bool)), crystalDock, SLOT(setVisible(bool)));
 	connect(ui.actionIndexing_Viewer, SIGNAL(toggled(bool)), indexingDock, SLOT(setVisible(bool)));
 	connect(ui.actionRotations_Toolbox, SIGNAL(toggled(bool)), rotateWidgetDock, SLOT(setVisible(bool)));
+	connect(ui.actionImage_Controls, SIGNAL(toggled(bool)), imageControlsDock, SLOT(setVisible(bool)));
 	
 	// Help Menu
 	
@@ -668,6 +678,21 @@ void MainWindow::saveCrystal(void){
 	statusBar()->showMessage(QString("Saved %1.")
 							 .arg(strippedName(currentCrystalFilename)),5000);
 	return;
+}
+
+void MainWindow::aquireImage(void){
+	camera->getImage();
+}
+
+void MainWindow::aquiredImageAvaliable(void){
+	if(QMessageBox::question(this,tr(APP_NAME),"A new image has been aquired. Do you want to import it?",
+							 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
+		QImage pixmap; 
+		pixmap = camera->getNewImage();
+		film->setImage(pixmap, true);
+		
+	}
+	
 }
 
 void MainWindow::importImage(void){

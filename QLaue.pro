@@ -26,8 +26,8 @@
 
 TEMPLATE = app
 TARGET = 
-CONFIG += x86_64 x86
-#CONFIG += x86_64
+#CONFIG += x86_64 x86
+CONFIG += x86_64
 
 CONFIG += release
 
@@ -77,7 +77,8 @@ HEADERS += aboutbox.h \
            xrayel.h \
            preferences.h \
 	   adjustimage.h \
-	   imagecontrols.h 
+	   imagecontrols.h \
+	   pslcamera.h 
 FORMS += aboutbox.ui \
          crystaldialog.ui \
          crystalwidget.ui \
@@ -90,7 +91,8 @@ FORMS += aboutbox.ui \
          rotatewidget.ui \
          setubmat.ui\
          preferences.ui \
-	 imagecontrols.ui 
+	 imagecontrols.ui \
+	 pslcamera.ui
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \
@@ -113,5 +115,6 @@ SOURCES += aboutbox.cpp \
            xray.cpp \
            preferences.cpp \
 	   adjustimage.cpp \
-	   imagecontrols.cpp 
+	   imagecontrols.cpp \
+	   pslcamera.cpp 
 RESOURCES += resources.qrc
