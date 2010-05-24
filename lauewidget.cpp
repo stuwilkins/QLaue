@@ -392,7 +392,7 @@ LaueFilm::LaueFilm(QWidget *parent, Crystal* c)
 	
 	// Define the origin of the film
 	
-	laueOrigin = QPoint(0,0);
+	laueOrigin = QPointF(0,0);
 	origin_circle = 0.5;
 
 	pixels_per_mm = 1000 / 172; // This is approximately 172 micron pixel size for PSL (2 x 2 binning)
@@ -734,6 +734,7 @@ void LaueFilm::paintImage(QPainter *painter, QRect size)
 	}
 	
 	importedImagePos = paintsize.topLeft();
+	importedImageCenter = paintsize.center();
 	painter->drawImage(importedImagePos, newimage);
 	
 	if(getBit(userAction, UASelectOrientation) || getBit(userAction, UASelectUBOrientation)){
@@ -974,8 +975,9 @@ void LaueFilm::mousePressEvent(QMouseEvent *event){
 	
 	if(getBit(userAction,LaueFilm::UASetOrigin)){
 		// We were asked to define the origin 
-		laueOrigin = (event->pos() - laueRect.center());
-		laueOrigin /= laueRect.height();
+		double isf = imageScaleFactor();
+		QPoint pixel = event->pos() - laueRect.center();
+		laueOrigin = QPointF(pixel.x() * isf / pixels_per_mm, -1 * pixel.y() * isf /  pixels_per_mm);
 		userAction = LaueFilm::UANone;
 		setCursor(Qt::ArrowCursor);
 		setMouseTracking(true);
@@ -1127,8 +1129,9 @@ void LaueFilm::mouseMoveEvent(QMouseEvent *event){
 	
 	if(getBit(userAction,LaueFilm::UASetOrigin)) {
 		if(laueRect.contains(event->pos())){
-			laueOrigin = (event->pos() - laueRect.center());
-			laueOrigin /= laueRect.height();
+			double isf = imageScaleFactor();
+			QPoint pixel = event->pos() - laueRect.center();
+			laueOrigin = QPointF(pixel.x() * isf / pixels_per_mm, -1 * pixel.y() * isf /  pixels_per_mm);
 			update();
 			event->accept();
 			return;
@@ -1318,8 +1321,11 @@ void LaueFilm::keyPressEvent(QKeyEvent *event){
 
 QPoint LaueFilm::worldToPixels(QPointF world){
 	double isf = imageScaleFactor();
+	QPoint origin;
 	
-	QPoint pixel = QPoint((int)(world.x()*pixels_per_mm/isf), (int)(world.y()*pixels_per_mm/isf) * -1);
+	QPointF nworld = world + laueOrigin;
+	QPoint pixel = QPoint((int)(nworld.x()*pixels_per_mm/isf),
+						  (int)(nworld.y()*pixels_per_mm/isf) * -1);
 	pixel = laueRect.center() + pixel;
 
 	return pixel;
@@ -1327,11 +1333,9 @@ QPoint LaueFilm::worldToPixels(QPointF world){
 
 QPointF LaueFilm::pixelsToWorld(QPoint pixel){
 	double isf = imageScaleFactor();
-	
 	pixel = pixel - laueRect.center();
 	QPointF world = QPointF(pixel.x() * isf / pixels_per_mm, -1 * pixel.y() * isf /  pixels_per_mm);
-	
-	return world;
+	return world - laueOrigin;
 }
 
 double LaueFilm::imageScaleFactor(void){

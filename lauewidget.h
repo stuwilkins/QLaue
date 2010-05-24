@@ -148,6 +148,7 @@ private:
 	QRubberBand *rubberBand;
 	QPoint rubberBandOrigin;
 	QPoint importedImagePos;
+	QPoint importedImageCenter;
 	double importedImageDX;
 	double importedImageDY;
 	QPoint zoomImagePos;

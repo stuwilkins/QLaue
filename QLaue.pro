@@ -92,7 +92,8 @@ FORMS += aboutbox.ui \
          setubmat.ui\
          preferences.ui \
 	 imagecontrols.ui \
-	 pslcamera.ui
+	 pslcamera.ui \
+	 pslcamera2.ui
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \

@@ -102,6 +102,7 @@ private slots:
 	void about(void);
 	void importImage(void);
 	void aquireImage(void);
+	void aquireImageDialog(void);
 	void saveCrystal(void);
 	void saveAsCrystal(void);
 	void open(void);
@@ -151,6 +152,7 @@ private slots:
 	void clearIndexingResults(void);
 	void displayHelpError(QString message);
 	void aquiredImageAvaliable(void);
+	void aquireImageMessageDisplay(QString message);
 public:
 	MainWindow();
 private:

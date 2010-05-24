@@ -31,6 +31,35 @@
 #include <QImage>
 #include <QMutex>
 #include <QWaitCondition>
+#include "ui_pslcamera.h"
+#include "ui_pslcamera2.h"
+
+class PSLCameraDialog : public QDialog {
+	Q_OBJECT
+private:
+	Ui::PSLCameraDialog ui;
+public:
+	PSLCameraDialog(QWidget* parent = 0);
+	
+	QString getHostname(void)				{ return ui.hostname->text(); }
+	quint16 getPort(void)					{ return (quint16)ui.portSpinBox->value(); }
+	double getIntegrationTime(void)			{ return ui.integrationTime->text().toDouble(); }
+	int getBinning(void)					{ return (int)ui.binningSpinBox->value(); }
+	
+	void setHostname(QString hostname)		{ ui.hostname->setText(hostname); }
+	void setPort(quint16 port)				{ ui.portSpinBox->setValue((int)port); }
+	void setIntegrationTime(double time)	{ ui.integrationTime->setText(QString("%1").arg(time)); }
+	void setBinning(int bin)				{ ui.binningSpinBox->setValue(bin); }
+};
+
+class PSLCameraImageDialog : public QDialog {
+	Q_OBJECT
+private:
+	Ui::PSLCameraImageDialog ui;
+public:
+	PSLCameraImageDialog(QWidget* parent = 0);
+	void setImage(QImage i);
+};
 
 class PSLCameraThread : public QThread
 {
@@ -42,13 +71,32 @@ public:
 	void getImage(void);
 	void run();
 	QImage getNewImage() {return receivedImage;}
+	
+	void setHost(QString host, qint16 portnum);
+	void setIntegrationTime(double time);
+	void setBinning(int binning);
+	
+	QString getHostname(void)				{ return hostName; }
+	quint16 getPort(void)					{ return port; }
+	double getIntegrationTime(void)			{ return integrationTime; }
+	int getBinning(void)					{ return binning; }
+	
 signals:
 	void error(int socketError, const QString &message);
 	void newImage(void);
+	void statusChange(QString message);
+	
 private:
-	void sendSnap(QString serverName, qint16 serverPort);
+	void sendSnap(void);
+	bool sendGetImage(void);
+	void sendCommand(QString command);
+	
 	QString hostName;
 	quint16 port;
+	int timeout;
+	double integrationTime;
+	int binning;
+	
 	QMutex mutex;
 	QWaitCondition cond;
 	QImage receivedImage;

@@ -216,6 +216,7 @@ void MainWindow::createConnections(void){
 	// Connections for image aquire
 	
 	connect(camera, SIGNAL(newImage()), this, SLOT(aquiredImageAvaliable()));
+	connect(camera, SIGNAL(statusChange(QString)), this, SLOT(aquireImageMessageDisplay(QString)));
 
 }
 
@@ -358,6 +359,7 @@ void MainWindow::setupActions(void){
 	
 	connect(ui.actionImport_Image, SIGNAL(triggered()), this, SLOT(importImage()));
 	connect(ui.actionAquire_Image, SIGNAL(triggered()), this, SLOT(aquireImage()));
+	connect(ui.actionAquire_Image_Dialog, SIGNAL(triggered()), this, SLOT(aquireImageDialog()));
 	connect(ui.actionDefine_Origin, SIGNAL(triggered()), film, SLOT(setOrigin()));
 	connect(ui.actionMeasure_Scale, SIGNAL(triggered()), film, SLOT(measureScale()));
 	connect(ui.actionImage_Scale, SIGNAL(triggered()), film, SLOT(setImageScale()));
@@ -680,16 +682,44 @@ void MainWindow::saveCrystal(void){
 	return;
 }
 
+void MainWindow::aquireImageDialog(void){
+	PSLCameraDialog dialog(this);
+	
+	dialog.setHostname(camera->getHostname());
+	dialog.setPort(camera->getPort());
+	dialog.setIntegrationTime(camera->getIntegrationTime());
+	dialog.setBinning(camera->getBinning());
+	if(dialog.exec()){
+		camera->setHost(dialog.getHostname(), dialog.getPort());
+		camera->setIntegrationTime(dialog.getIntegrationTime());
+		camera->setBinning(dialog.getBinning());
+	}
+}
+
 void MainWindow::aquireImage(void){
-	camera->getImage();
+	camera->getImage();	
+}
+			
+void MainWindow::aquireImageMessageDisplay(QString message){
+	statusBar()->showMessage(message, 50000);
 }
 
 void MainWindow::aquiredImageAvaliable(void){
-	if(QMessageBox::question(this,tr(APP_NAME),"A new image has been aquired. Do you want to import it?",
-							 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
-		QImage pixmap; 
-		pixmap = camera->getNewImage();
+	//if(QMessageBox::question(this,tr(APP_NAME),"A new image has been aquired. Do you want to import it?",
+	//						 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes){
+	QImage pixmap; 
+	pixmap = camera->getNewImage();
+	PSLCameraImageDialog dialog(this);
+	dialog.setImage(pixmap);
+	
+	if(dialog.exec()){
 		film->setImage(pixmap, true);
+		QString imageInfo = QString("%1 x %2 pixels").arg(pixmap.width()).arg(pixmap.height());
+		imagecontrols->setImageInfo(imageInfo);
+		setDisplayImageControls(true);
+		imagecontrols->setDefaults();
+		statusBar()->showMessage(QString("Aquired image (%1 x %2 pixels)")
+								 .arg(pixmap.width()).arg(pixmap.height()), 5000);
 		
 	}
 	

@@ -99,7 +99,9 @@
      <string>Laue</string>
     </property>
     <addaction name="actionImport_Image"/>
-	<addaction name="actionAquire_Image"/>
+    <addaction name="separator"/>
+    <addaction name="actionAquire_Image"/>
+    <addaction name="actionAquire_Image_Dialog"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Image"/>
     <addaction name="actionInvert_Image"/>
@@ -656,6 +658,9 @@
    <property name="text">
     <string>Set Image Scale</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
   </action>
   <action name="actionRotate_Image">
    <property name="checkable">
@@ -679,6 +684,17 @@
   <action name="actionAquire_Image">
    <property name="text">
     <string>Aquire Image ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionAquire_Image_Dialog">
+   <property name="text">
+    <string>Camera Setup</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
  </widget>

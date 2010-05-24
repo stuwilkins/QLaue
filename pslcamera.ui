@@ -47,7 +47,7 @@
    <property name="title">
     <string>Server</string>
    </property>
-   <widget class="QSpinBox" name="spinBox">
+   <widget class="QSpinBox" name="portSpinBox">
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -63,7 +63,7 @@
      <number>50000</number>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="hostname">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -115,7 +115,7 @@
    <property name="title">
     <string>Settings</string>
    </property>
-   <widget class="QSpinBox" name="spinBox_2">
+   <widget class="QSpinBox" name="binningSpinBox">
     <property name="geometry">
      <rect>
       <x>310</x>
@@ -147,7 +147,7 @@
      <string>Binning</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
+   <widget class="QLineEdit" name="integrationTime">
     <property name="geometry">
      <rect>
       <x>140</x>
