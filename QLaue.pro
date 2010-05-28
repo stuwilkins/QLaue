@@ -93,7 +93,8 @@ FORMS += aboutbox.ui \
          preferences.ui \
 	 imagecontrols.ui \
 	 pslcamera.ui \
-	 pslcamera2.ui
+	 pslcamera2.ui \
+	 pslcamera3.ui
 SOURCES += aboutbox.cpp \
            atom.cpp \
            crystal.cpp \
