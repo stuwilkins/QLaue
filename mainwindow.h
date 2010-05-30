@@ -62,6 +62,7 @@ class MainWindow : public QMainWindow
 	CrystalWidget		*crystalWidget;
 	MainWindowWidget	*mainWidget;
 	ImageControlWidget  *imagecontrols;
+	PSLCameraWidget	    *cameraWidget;
 	QProgressBar		*progressBar;
 	QTableWidget		*indexingWidget;
 	QTextEdit			*textViewDockWidget;
@@ -75,6 +76,7 @@ class MainWindow : public QMainWindow
 	QDockWidget *crystalDock;
 	QDockWidget *indexingDock;
 	QDockWidget *imageControlsDock;
+	QDockWidget *cameraControlsDock;
 	
 	// Tool bar stuff
 	

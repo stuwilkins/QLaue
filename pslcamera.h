@@ -33,6 +33,18 @@
 #include <QWaitCondition>
 #include "ui_pslcamera.h"
 #include "ui_pslcamera2.h"
+#include "ui_pslcamera3.h"
+
+class PSLCameraWidget : public QWidget
+{
+	Q_OBJECT
+	
+public:
+	PSLCameraWidget(QWidget *parent = 0);
+private:
+	Ui::PSLCameraWidget ui;
+};
+
 
 class PSLCameraDialog : public QDialog {
 	Q_OBJECT

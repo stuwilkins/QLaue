@@ -30,6 +30,12 @@
 #include <QPixmap>
 #include "pslcamera.h"
 
+PSLCameraWidget::PSLCameraWidget(QWidget *parent) : QWidget(parent)
+{
+	ui.setupUi(this);
+	setFixedSize(QSize(ui.groupBox->width() + 20,ui.groupBox->height() + 20));
+}
+
 PSLCameraImageDialog::PSLCameraImageDialog(QWidget* parent) :
 QDialog(parent)
 {

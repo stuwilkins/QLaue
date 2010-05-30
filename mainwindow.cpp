@@ -114,6 +114,7 @@ void MainWindow::createDockWindows(void){
 	rotate = new RotateWidget;
 	lauecontrols = new LaueControls;
 	imagecontrols = new ImageControlWidget;
+	cameraWidget = new PSLCameraWidget;
 	
 	laueControlsDock = new QDockWidget(tr("Laue Controls"), this);
 	laueControlsDock->setObjectName("LaueControlsDock");
@@ -141,6 +142,15 @@ void MainWindow::createDockWindows(void){
 	imageControlsDock->setWidget(imagecontrols);
 	addDockWidget(Qt::RightDockWidgetArea, imageControlsDock);
 	imageControlsDock->show();
+	
+	cameraControlsDock = new QDockWidget(tr("Camera Controls"), this);
+	cameraControlsDock->setObjectName("CameraControlDock");
+	cameraControlsDock->setFixedSize(rotate->size() + QSize(0,25));
+	cameraControlsDock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+	cameraControlsDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	cameraControlsDock->setWidget(cameraWidget);
+	addDockWidget(Qt::RightDockWidgetArea, cameraControlsDock);
+	cameraControlsDock->show();
 	
 	textViewDock = new QDockWidget(tr("Data View"), this);
 	textViewDock->setObjectName("TextViewDock");
