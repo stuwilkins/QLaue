@@ -828,7 +828,7 @@ void Reorientation::calc(int thismode){
 	
 		angles[6][0] = atan2(hPhi2.Get(1,0),hPhi2.Get(2,0));
 	
-		R = R.rotateX(-1.0 * angles[3][0]);
+		R = R.rotateX(-1.0 * angles[6][0]);
 		hPhi3 = R * hPhi;
 		
 		angles[6][1] = atan2(hPhi3.Get(2,0),hPhi3.Get(0,0));
